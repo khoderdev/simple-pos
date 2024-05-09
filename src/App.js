@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import POSPage from './pages/POSPage';
 import { useLockContext } from './contexts/LockContext';
 import Sales from './components/Sales';
+import MainLayout from './layouts/MainLayout';
 
 const LockedMessage = () => {
   return (
@@ -20,22 +21,24 @@ function App() {
   const { isLocked } = useLockContext();
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        {isLocked ? (
-          <>
-            <Route path="/pos" element={<LockedMessage />} />
-            <Route path="/sales" element={<LockedMessage />} />
-          </>
-        ) : (
-          <>
-            <Route path="/pos" element={<POSPage />} />
-            <Route path="/sales" element={<Sales />} />
-          </>
-        )}
-      </Routes>
-    </Router>
+    // <MainLayout>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          {isLocked ? (
+            <>
+              <Route path="/pos" element={<LockedMessage />} />
+              <Route path="/sales" element={<LockedMessage />} />
+            </>
+          ) : (
+            <>
+              <Route path="/pos" element={<POSPage />} />
+              <Route path="/sales" element={<Sales />} />
+            </>
+          )}
+        </Routes>
+      </Router>
+    // </MainLayout>
   );
 }
 
