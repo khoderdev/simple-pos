@@ -27,3 +27,25 @@ code {
   max-height: 100px;
   object-fit: cover;
 }
+
+
+.sales-container {
+  padding: 20px;
+}
+
+.orders-list {
+  display: grid;
+  gap: 20px;
+}
+
+.order-item {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.item {
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+  /* margin-top: 10px; */
+}

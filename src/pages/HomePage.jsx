@@ -3,6 +3,7 @@ import MainLayout from '../layouts/MainLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaLock } from 'react-icons/fa';
 import { useLockContext } from '../contexts/LockContext';
+import Sales from '../components/Sales'
 
 function HomePage() {
   const [pin, setPin] = useState('');
@@ -35,8 +36,9 @@ function HomePage() {
       <div className='bg-light p-5 mt-4 rounded-3 text-center'>
         <h1 className="mb-4">KK Coffee Shop</h1>
         <div className="lock-icon-container" >
-          {!isLocked && <Link to='/pos' className="btn btn-primary p-2 mb-3" style={{width:'100px', fontSize:'30px'}}>POS</Link>}
+          {!isLocked && <Link to='/pos' className="btn btn-primary p-2 mb-3" style={{ width: '100px', fontSize: '30px' }}>POS</Link>}
         </div>
+        <Link to='/sales' className="btn btn-primary p-2 mb-3" style={{ width: '100px', fontSize: '30px' }}>Sales</Link>
         {isLocked ? (
           <div className="mx-auto" style={{ maxWidth: "300px" }}>
             <p className="mb-3">Enter PIN to unlock:</p>
