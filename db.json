@@ -1,58 +1,40 @@
 {
     "products": [
         {
-            "id": 1,
-            "name": "Espresso",
-            "price": "75000",
+            "id": 123,
+            "name": "orange",
+            "price": "2",
             "image": "https://cdn.pixabay.com/photo/2017/01/20/15/06/oranges-1995056_960_720.jpg"
         },
         {
-            "id": 2,
-            "name": "Raqwa coffee",
-            "price": "75000",
+            "id": 131,
+            "name": "Milk",
+            "price": "3",
             "image": "https://cdn.pixabay.com/photo/2018/03/16/16/42/milk-3231772_960_720.jpg"
         },
         {
-            "id": 3,
-            "name": "Nescafe",
-            "price": "100000",
+            "id": 132,
+            "name": "Ice Cream",
+            "price": "4",
             "image": "https://cdn.pixabay.com/photo/2016/12/26/16/09/bowl-1932375_960_720.jpg"
         },
         {
-            "id": 4,
-            "name": "Tea",
-            "price": "75000",
+            "id": 133,
+            "name": "Salmon",
+            "price": "10",
             "image": "https://cdn.pixabay.com/photo/2021/01/05/23/18/salmon-5892659_960_720.jpg"
         },
         {
-            "id": 5,
-            "name": "Fresh Orange juice",
-            "price": "100000",
+            "id": 134,
+            "name": "Watermelon",
+            "price": "2",
             "image": "https://cdn.pixabay.com/photo/2015/09/27/18/18/watermelons-961128_960_720.jpg"
         },
         {
-            "id": 6,
-            "name": "Fresh Carrot juice",
-            "price": "100000",
+            "id": 135,
+            "name": "Potato",
+            "price": "4",
             "image": "https://cdn.pixabay.com/photo/2016/08/11/08/43/potatoes-1585060_960_720.jpg"
-        },
-        {
-            "id": 7,
-            "name": "Fresh Carrot juice",
-            "price": "100000",
-            "image": "https://cdn.pixabay.com/photo/2016/08/11/08/43/potatoes-1585060_960_720.jpg"
-        },
-        {
-            "id": 8,
-            "name": "Fresh Orange juice",
-            "price": "100000",
-            "image": "https://cdn.pixabay.com/photo/2015/09/27/18/18/watermelons-961128_960_720.jpg"
-        },
-        {
-            "id": 9,
-            "name": "Tea",
-            "price": "75000",
-            "image": "https://cdn.pixabay.com/photo/2021/01/05/23/18/salmon-5892659_960_720.jpg"
         }
     ]
 }

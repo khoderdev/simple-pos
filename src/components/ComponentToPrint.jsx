@@ -21,10 +21,7 @@ export const ComponentToPrint = React.forwardRef((props, ref) => {
                       <td>{cartProduct.price}</td>
                       <td>{cartProduct.quantity}</td>
                       <td>{cartProduct.totalAmount}</td>
-                    
-
                     </tr>)
-
                     : ''}
                   </tbody>
                 </table>
