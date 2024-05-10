@@ -70,7 +70,6 @@ code {
 }
 
 .order-details {
-  /* margin-top: 20px; */
   padding: 35px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -84,7 +83,6 @@ code {
 }
 
 .order-details ul {
-  /* list-style: none; */
   padding: 0;
 }
 
@@ -98,12 +96,19 @@ code {
 }
 .order-details .item span {
   font-weight: 500;
-  color: green;
+  color: #198754;
   margin: 5px 0;
 }
 
 .selected-order {
+  color: white;
+  font-weight: 600;
   border: 2px solid #007bff;
+  background-color: #007bff;
+}
+.selected-order:hover {
+  border: 2px solid #007bffad !important;
+  background-color: #007bffd0 !important;
 }
 
 .selected-order-details {
