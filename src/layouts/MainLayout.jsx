@@ -20,8 +20,12 @@ function MainLayout({ children }) {
         <nav className="navbar navbar-light bg-primary">
           <div className="container">
             <Link to="/" className="navbar-brand fw-bold " style={{ fontSize: "28px", color: 'white' }}>KK Coffee Shop</Link>
+            <div className="d-flex align-items-center">
+              <button className="btn btn-outline-light me-2" onClick={() => navigate('/pos')}>Orders</button>
+              <button className="btn btn-outline-light ms-2" onClick={() => navigate('/sales')}>Sales</button>
+            </div>
           </div>
-          <div className="lock-icon-container" style={{marginRight:'200px'}} onClick={clearLock}>
+          <div className="lock-icon-container" style={{marginRight:'50px'}} onClick={clearLock}>
             {!isLocked && <FaLock className='lock-icon' size={32} style={{ cursor: 'pointer' }} />}
           </div>
         </nav>

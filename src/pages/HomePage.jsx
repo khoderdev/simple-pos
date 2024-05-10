@@ -33,11 +33,20 @@ function HomePage() {
 
   return (
     <MainLayout>
-      <div className='bg-light p-5 mt-4 rounded-3 text-center'>
-        <h1 className="mb-4">KK Coffee Shop</h1>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
-          {!isLocked && <Link to='/pos' className="btn btn-primary p-2 mb-3" style={{ width: '100px', fontSize: '30px' }}>POS</Link>}
-          {!isLocked && <Link to='/sales' className="btn btn-primary p-2 mb-3" style={{ width: '100px', fontSize: '30px' }}>Sales</Link>}
+      <div className='vh-100 bg-light p-5 mt-4 rounded-3 text-center'>
+        <h1 className="mb-lg-5">KK Coffee Shop system</h1>
+
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '25px' }}>
+          {!isLocked && (
+            <Link to='/pos' className="card btn btn-outline-primary" style={{ width: '200px', height: '150px', fontSize: '24px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textDecoration: 'none', color: '#000' }}>
+              <span>POS</span>
+            </Link>
+          )}
+          {!isLocked && (
+            <Link to='/sales' className="card btn btn-outline-primary" style={{ width: '200px', height: '150px', fontSize: '24px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textDecoration: 'none', color: '#000' }}>
+              <span>Sales</span>
+            </Link>
+          )}
         </div>
 
         {isLocked ? (
