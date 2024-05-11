@@ -138,10 +138,55 @@ code {
   border-color: white;
 }
 
-
-.add-products-row{
+.add-products-row {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.date-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.date-input {
+  width: 100%;
+  max-width: 200px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.filter-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.filter-button,
+.reset-button {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-button:hover,
+.reset-button:hover {
+  background-color: #0056b3;
+}
+
+@media (min-width: 768px) {
+  .date-input,
+  .filter-button,
+  .reset-button {
+    width: auto;
+    max-width: none;
+  }
 }
