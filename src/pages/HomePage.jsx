@@ -59,6 +59,7 @@ function HomePage() {
               onChange={handlePinChange}
               onKeyDown={handleKeyPress}
               className='form-control mb-3'
+              autoFocus
             />
             <div className="lock-icon-container mb-3" onClick={handleUnlock}>
               <FaLock className='lock-icon' size={42} style={{ cursor: 'pointer' }} />

@@ -18,6 +18,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 app.use(express.json());
 app.use(cors());
 app.use(morgan('dev')); // Use morgan with 'dev' format for HTTP request logging
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/', productRoutes);
