@@ -17,7 +17,7 @@ function MainLayout({ children }) {
       <header className="bg-[#0a1627]">
         <nav className="container mx-auto px-4 py-2 flex justify-between items-center">
           <Link to="/">
-            <img src="logo.png" className="w-64" />
+            <img src="logo.png" className="w-72" />
           </Link>
           <div className="hidden sm:flex gap-3">
             <button onClick={() => navigate("/pos")}>Orders</button>
@@ -27,7 +27,7 @@ function MainLayout({ children }) {
           <div className="lock-icon-container" onClick={clearLock}>
             {!isLocked && (
               <FaLock
-                className="lock-icon"
+                className="hover:text-[#fe0039] transition-colors"
                 size={32}
                 style={{ cursor: "pointer" }}
               />

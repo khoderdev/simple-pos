@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
-import MainLayout from '../layouts/MainLayout';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaLock } from 'react-icons/fa';
-import { useLockContext } from '../contexts/LockContext';
-import Sales from '../components/Sales'
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { FaLock } from "react-icons/fa";
+import { useLockContext } from "../contexts/LockContext";
 
 function HomePage() {
-  const [pin, setPin] = useState('');
+  const [pin, setPin] = useState("");
   const { isLocked, unlockApp } = useLockContext(); // Get isLocked state and unlockApp function
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const unlockOnCorrectPin = () => {
+      if (pin === "3333" && pin.length === 4) {
+        unlockApp(); // Unlock the app
+        navigate("/pos"); // Navigate to /pos after unlocking
+      }
+    };
+
+    if (isLocked) {
+      // Listen for changes in the PIN
+      document.addEventListener("input", unlockOnCorrectPin);
+    }
+
+    // Cleanup event listener
+    return () => {
+      document.removeEventListener("input", unlockOnCorrectPin);
+    };
+  }, [pin, isLocked, unlockApp, navigate]);
+
   const handleUnlock = () => {
     // Check if PIN is correct (e.g., 3333)
-    if (pin === '3333') {
+    if (pin === "3333") {
       unlockApp(); // Unlock the app
-      navigate('/pos'); // Navigate to /pos after unlocking
+      navigate("/pos"); // Navigate to /pos after unlocking
     } else {
-      alert('Invalid PIN. Please try again.');
+      alert("Invalid PIN. Please try again.");
     }
   };
 
@@ -24,50 +41,47 @@ function HomePage() {
     setPin(e.target.value);
   };
 
-  const handleKeyPress = (e) => {
-    // Check if Enter key is pressed (key code 13)
-    if (e.key === 'Enter') {
-      handleUnlock();
-    }
-  };
-
   return (
-    // <MainLayout>
-      <div className='vh-100 bg-light p-5 mt-4 rounded-3 text-center'>
-        <h1 className="mb-lg-5">KK Coffee Shop system</h1>
+    <div className="vh-100 flex flex-col items-center p-5 mt-4 rounded-3 text-center">
+      <h1 className="mb-lg-5">Welcome to Karam Café</h1>
 
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '25px' }}>
-          {!isLocked && (
-            <Link to='/pos' className="card btn btn-outline-primary" style={{ width: '200px', height: '150px', fontSize: '24px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textDecoration: 'none', color: '#000' }}>
-              <span>POS</span>
-            </Link>
-          )}
-          {!isLocked && (
-            <Link to='/sales' className="card btn btn-outline-primary" style={{ width: '200px', height: '150px', fontSize: '24px', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textDecoration: 'none', color: '#000' }}>
-              <span>Sales</span>
-            </Link>
-          )}
-        </div>
-
-        {isLocked ? (
-          <div className="mx-auto" style={{ maxWidth: "300px" }}>
-            <p className="mb-3">Enter PIN to unlock:</p>
-            <input
-              type='password'
-              placeholder='Enter PIN'
-              value={pin}
-              onChange={handlePinChange}
-              onKeyDown={handleKeyPress}
-              className='form-control mb-3'
-              autoFocus
-            />
-            <div className="lock-icon-container mb-3" onClick={handleUnlock}>
-              <FaLock className='lock-icon' size={42} style={{ cursor: 'pointer' }} />
-            </div>
-          </div>
-        ) : null}
+      <div className="flex justify-center items-center md:pt-20 gap-14">
+        {!isLocked && (
+          <Link to="/pos" className="cards md:!p-20">
+            <span>POS</span>
+          </Link>
+        )}
+        {!isLocked && (
+          <Link to="/sales" className="cards md:!p-16">
+            <span>Sales</span>
+          </Link>
+        )}
       </div>
-    // </MainLayout>
+
+      {isLocked ? (
+        <div className="flex flex-col w-52 justify-center items-center">
+          <p className="mb-3 font-medium text-lg">Enter PIN to unlock:</p>
+          <input
+            type="password"
+            placeholder="Enter PIN"
+            value={pin}
+            onChange={handlePinChange}
+            className="rounded-md p-2 border border-[#fe0039]"
+            autoFocus
+            maxLength={4}
+          />
+          <div
+            className="absolute top-[25rem] mb-3 hover:text-[#fff]"
+            onClick={handleUnlock}
+          >
+            <FaLock className=" transition-colors cursor-pointer" size={100} />
+            <p className="text-red text-[1rem] font-bold mt-[-2.2rem] select-none cursor-pointer">
+              Unlock
+            </p>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 }
 

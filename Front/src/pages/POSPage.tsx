@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import Modal from "../components/Modal";
 
@@ -13,11 +12,6 @@ function POSPage() {
   const [totalAmount, setTotalAmount] = useState(0);
 
   const [showModal, setShowModal] = useState(false);
-
-  const toastOptions = {
-    autoClose: 400,
-    pauseOnHover: true,
-  };
 
   const fetchProducts = async () => {
     setIsLoading(true);
@@ -43,7 +37,6 @@ function POSPage() {
       };
       setCart((prevCart) => [...prevCart, newCartItem]);
     }
-    toast(`Added ${product.name} to cart`, toastOptions);
   };
 
   const removeProduct = (productId) => {
@@ -98,17 +91,17 @@ function POSPage() {
   return (
     <>
       <div className="flex flex-wrap w-full h-full justify-between">
-        <div className="w-full lg:w-1/2">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="w-full lg:w-[62%]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {isLoading ? (
-              <div className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-52 flex items-center justify-center bg-gray-800 rounded p-4">
+              <div className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-auto flex items-center justify-center bg-gray-800 rounded p-4">
                 Loading...
               </div>
             ) : (
               products.map((product) => (
                 <div
                   key={product._id}
-                  className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-64 flex flex-col justify-between items-center bg-gray-800 rounded p-4 cursor-pointer hover:bg-blue-900"
+                  className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-auto flex flex-col justify-between items-center bg-gray-800 rounded p-4 cursor-pointer bg-red-hover"
                   onClick={() => addProductToCart(product)}
                 >
                   <h4 className="text-[1.7rem] font-bold">{product.name}</h4>
@@ -126,63 +119,65 @@ function POSPage() {
             )}
           </div>
         </div>
-        <div className="w-full lg:w-[45%] flex flex-col items-stretch mt-8 lg:mt-0">
-          <div className="bg-[#1a1a1a] text-white p-4 rounded">
-            <table className="w-full mb-10">
-              <thead>
-                <tr>
-                  <th className="text-left text-2xl px-4 py-2">Name</th>
-                  <th className="text-left text-2xl px-4 py-2">Price</th>
-                  <th className="text-left text-2xl px-4 py-2">Qty</th>
-                  <th className="text-left text-2xl px-4 py-2">Total</th>
-                  <th className="text-left text-2xl px-4 py-2">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cart.map((cartProduct) => (
-                  <tr
-                    key={cartProduct._id}
-                    className="border-t border-gray-300"
-                  >
-                    <td className="px-4 py-2 text-gray-300">
-                      {cartProduct.name}
-                    </td>
-                    <td className="px-4 py-2 text-gray-300">
-                      {cartProduct.price.toLocaleString()} L.L
-                    </td>
-                    <td className="px-4 py-2 text-gray-300">
-                      {cartProduct.quantity}
-                    </td>
-                    <td className="px-4 py-2 text-gray-300">
-                      {cartProduct.totalAmount.toLocaleString()} L.L
-                    </td>
-                    <td className="px-4 py-2">
-                      <button
-                        className="bg-red-500 px-2 py-1 rounded hover:bg-red-600 text-white"
-                        onClick={() => removeProduct(cartProduct._id)}
-                      >
-                        Remove
-                      </button>
-                    </td>
+        <div className="w-full lg:w-[37%] flex flex-col items-stretch mt-8 lg:mt-0">
+          <div className="sticky top-2">
+            <div className="bg-[#1a1a1a] text-white p-4 rounded">
+              <table className="w-full mb-10">
+                <thead>
+                  <tr>
+                    <th className="text-left text-2xl px-4 py-2">Name</th>
+                    <th className="text-left text-2xl px-4 py-2">Price</th>
+                    <th className="text-left text-2xl px-4 py-2">Qty</th>
+                    <th className="text-left text-2xl px-4 py-2">Total</th>
+                    <th className="text-left text-2xl px-4 py-2">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="flex justify-between items-center">
-              <p className="text-2xl text-[#FE0039] font-semibold">
-                Total Amount: {totalAmount.toLocaleString()} L.L
-              </p>
-              <div>
-                {totalAmount !== 0 ? (
-                  <button
-                    className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600 text-white"
-                    onClick={placeOrder}
-                  >
-                    Place Order
-                  </button>
-                ) : (
-                  <p className="text-sm">Please add a product to the cart</p>
-                )}
+                </thead>
+                <tbody>
+                  {cart.map((cartProduct) => (
+                    <tr
+                      key={cartProduct._id}
+                      className="border-t border-gray-500"
+                    >
+                      <td className="px-4 py-2 font-semibold text-gray-300">
+                        {cartProduct.name}
+                      </td>
+                      <td className="px-4 py-2 text-gray-300">
+                        {cartProduct.price.toLocaleString()} L.L
+                      </td>
+                      <td className="px-4 py-2 text-gray-300">
+                        {cartProduct.quantity}
+                      </td>
+                      <td className="px-4 py-2 text-gray-300">
+                        {cartProduct.totalAmount.toLocaleString()} L.L
+                      </td>
+                      <td className="px-4 py-2">
+                        <button
+                          className="text-red px-2 py-1 rounded hover:border-red-600"
+                          onClick={() => removeProduct(cartProduct._id)}
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex justify-between items-center">
+                <p className="text-3xl text-red font-semibold">
+                  Total: {totalAmount.toLocaleString()} L.L
+                </p>
+                <div>
+                  {totalAmount !== 0 ? (
+                    <button
+                      className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600 text-white"
+                      onClick={placeOrder}
+                    >
+                      Place Order
+                    </button>
+                  ) : (
+                    <p className="text-sm">Please add a product to the cart</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -17,7 +17,11 @@ const AddNewProducts = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get("http://192.168.43.138:5000/products");
-      setProducts(response.data);
+      // Sort products by creation date (assuming there's a createdAt field)
+      const sortedProducts = response.data.sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+      setProducts(sortedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
@@ -107,30 +111,32 @@ const AddNewProducts = () => {
   return (
     <div className="flex flex-col md:flex-row">
       <div className="flex flex-col md:w-1/2 mr-4">
-        <h2 className="mb-4">Add New Product</h2>
-        <div className="mb-2">
+        <h2 className="mb-4 text-2xl font-semibold">Add New Item</h2>
+        <label className="mb-2">
+          Item name:
           <input
             type="text"
-            className="form-control"
+            className="mb-2 mt-1 rounded-md p-1 block border border-gray-700"
             name="name"
             placeholder="Name"
             value={newProduct.name}
             onChange={handleInputChange}
             required
           />
-        </div>
-        <div className="mb-2">
+        </label>
+        <label className="mb-2">
+        Item price:
           <input
             type="number"
-            className="text-gray-400"
+            className="mb-2 mt-1 rounded-md p-1 block border border-gray-700"
             name="price"
             placeholder="Price"
             value={newProduct.price}
             onChange={handleInputChange}
             required
           />
-        </div>
-        <div className="mb-2">
+        </label>
+        <div className="mb-4">
           <input
             type="file"
             className="form-control"
@@ -141,20 +147,20 @@ const AddNewProducts = () => {
           />
         </div>
         <div>
-          <button onClick={addProduct}>Add Product</button>
+          <button onClick={addProduct}>Add Item</button>
         </div>
       </div>
 
-      <div className="w-2/3">
-        <h2 className="text-3xl mb-4">Products</h2>
-        <div className="grid grid-cols-3 gap-6">
+      <div className="">
+        <h2 className="text-2xl font-semibold mb-4">Items List</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
           {products.map((product) => (
             <div key={product._id}>
-              <div className="border border-gray-500 rounded-lg overflow-hidden">
+              <div className=" border border-gray-500 rounded-lg overflow-hidden p-2">
                 <img
                   src={`http://192.168.43.138:5000/${product.image}`}
                   alt={product.name}
-                  className="w-96 h-"
+                  className="w-full h-64 object-contain"
                 />
                 {editProduct === product._id ? (
                   <div className="p-4">
@@ -205,10 +211,10 @@ const AddNewProducts = () => {
                 ) : (
                   <div className="p-4">
                     <p className="text-lg font-bold mb-2">{product.name}</p>
-                    <p className="text-gray-400">${product.price}</p>
+                    <p className="text-gray-400">L.L {product.price}</p>
                   </div>
                 )}
-                <div className="p-4 border-t border-gray-700">
+                <div className="py-4 px-1 border-t border-gray-700">
                   <div className="flex justify-between">
                     <button
                       onClick={() => deleteProduct(product._id)}

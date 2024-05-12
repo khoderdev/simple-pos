@@ -6,6 +6,7 @@ function Sales() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -13,6 +14,7 @@ function Sales() {
 
   const fetchOrders = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("http://192.168.43.138:5000/orders");
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
@@ -29,8 +31,10 @@ function Sales() {
         })
       );
       setOrders(ordersWithProducts);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setLoading(false);
     }
   };
 
@@ -42,6 +46,7 @@ function Sales() {
 
   const handleFilter = async () => {
     try {
+      setLoading(true);
       const response = await axios.get("http://192.168.43.138:5000/orders");
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
@@ -68,8 +73,10 @@ function Sales() {
       });
 
       setOrders(filteredOrders);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching or filtering orders:", error);
+      setLoading(false);
     }
   };
 
@@ -122,54 +129,97 @@ function Sales() {
       </div>
 
       {/* Orders */}
-      <div className="accordion w-full font-medium md:w-1/2 border border-gray-900 p-2 bg-dark-blue rounded-md">
-        {orders.map((order, index) => (
-          <div
-            key={order._id}
-            className={`mb-8 ${
-              selectedOrder && selectedOrder._id === order._id
-                ? "border border-gray-900 rounded-md p-2"
-                : ""
-            }`}
-          >
-            <div
-              onClick={() => handleRowClick(order)}
-              className={`order-row cursor-pointer ${
-                selectedOrder && selectedOrder._id === order._id
-                  ? "selected-order"
-                  : ""
-              }`}
-            >
-              <div className="flex justify-between items-center">
-                <div>{`Order #${index + 1}`}</div>
-                <div>{order.totalAmount.toLocaleString()} L.L</div>
-                <div>{new Date(order.createdAt).toLocaleString()}</div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="accordion w-full font-medium lg:w-1/2 border border-gray-900 p-6 bg-dark-blue rounded-md">
+          {orders.length === 0 ? (
+            <p className="text-red text-xl text-center">
+              No Orders at the selected dates
+            </p>
+          ) : (
+            <>
+              {/* Header titles */}
+              <div className="flex justify-between text-blue-500 border-b border-gray-700 pb-3 mb-3 sm:px-10">
+                <div className="text-lg font-bold">Order #</div>
+                <div className="text-lg font-bold mr-16 md:mr-0">Total Amount</div>
+                <div className="text-lg font-bold">Created Date</div>
               </div>
-            </div>
-            {selectedOrder && selectedOrder._id === order._id && (
-              <div className="order-details mt-4 bg-black-bg p-4 rounded-md">
-                <p className="font-bold text-xl text-green-500">
-                  Total Amount: {selectedOrder.totalAmount.toLocaleString()} L.L
-                </p>
-                <p className="text-gray-400">
-                  Created at:{" "}
-                  {new Date(selectedOrder.createdAt).toLocaleString()}
-                </p>
-                <h3 className="font-bold text-xl mt-2">Items:</h3>
-                <ul>
-                  {selectedOrder.items.map((item, index) => (
-                    <li key={index} className="item">
-                      <p className="">Name: {item.name}</p>
-                      <p>Price: {item.price.toLocaleString()} L.L</p>
-                      <p>Quantity: {item.quantity}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+
+              {/* Order rows */}
+              {orders.map((order, index) => (
+                <div
+                  key={order._id}
+                  className={`mb-6 ${
+                    selectedOrder && selectedOrder._id === order._id
+                      ? "border bg-black-bg border-[#fe0039] rounded-md p-3"
+                      : ""
+                  }`}
+                >
+                  {/* Orders rows */}
+                  <div
+                    onClick={() => handleRowClick(order)}
+                    className={`order-row cursor-pointer border-b border-gray-700 ${
+                      selectedOrder && selectedOrder._id === order._id
+                        ? "selected-order"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="text-lg pl-10 md:pl-16">{`${index + 1}`}</div>
+                      <div className="text-lg sm:ml-14">
+                        {order.totalAmount.toLocaleString()} L.L
+                      </div>
+                      <div className="text-lg">
+                        {new Date(order.createdAt).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Order details */}
+                  {selectedOrder && selectedOrder._id === order._id && (
+                    <div className="order-details mt-4 bg-black-bg p-4 rounded-md">
+                      <p className="font-bold text-xl text-green-500 mb-1">
+                        Total Amount:{" "}
+                        {selectedOrder.totalAmount.toLocaleString()} L.L
+                      </p>
+                      <p className="text-gray-400 mb-4">
+                        Created at:{" "}
+                        {new Date(selectedOrder.createdAt).toLocaleString()}
+                      </p>
+                      <h3 className="font-bold text-xl my-2">Items:</h3>
+                      <ul>
+                        {selectedOrder.items.map((item, index) => (
+                          <li key={index} className="item">
+                            <p className="text-red">Item {index + 1}</p>
+                            <p className="text-gray-400">
+                              Name:{" "}
+                              <span className="text-white">{item.name}</span>
+                            </p>
+                            <p className="text-gray-400">
+                              Price:{" "}
+                              <span className="text-white">
+                                {" "}
+                                {item.price.toLocaleString()} L.L
+                              </span>
+                            </p>
+                            <p className="text-gray-400">
+                              Quantity:{" "}
+                              <span className="text-white">
+                                {item.quantity}
+                              </span>
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
