@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
 import Modal from "../components/Modal";
 
+const BASE_URL = "http://192.168.43.138:5000";
+
 function POSPage() {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -51,14 +53,17 @@ function POSPage() {
 
   const placeOrder = async () => {
     try {
-      const response = await axios.post("http://192.168.43.138:5000/orders/new", {
-        items: cart.map((item) => ({
-          productId: item._id,
-          quantity: item.quantity,
-          price: item.price,
-        })),
-        totalAmount,
-      });
+      const response = await axios.post(
+        "http://192.168.43.138:5000/orders/new",
+        {
+          items: cart.map((item) => ({
+            productId: item._id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          totalAmount,
+        }
+      );
       console.log("Order placed successfully:", response.data);
       console.log("Items:", response.data.items);
       setShowModal(true);
@@ -93,29 +98,34 @@ function POSPage() {
   return (
     <>
       <div className="flex flex-wrap w-full h-full justify-between">
-      <div className="w-full lg:w-1/2">
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-    {isLoading ? (
-      <div className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-52 flex items-center justify-center bg-gray-800 rounded p-4">
-        Loading...
-      </div>
-    ) : (
-      products.map((product) => (
-        <div
-          key={product._id}
-          className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-52 flex flex-col justify-between bg-gray-800 rounded p-4 cursor-pointer"
-          onClick={() => addProductToCart(product)}
-        >
-          <h4 className="text-2xl font-semibold">{product.name}</h4>
-          <img src={product.image} alt={product.name} className="w-full h-auto" />
-          <p className="mt-2 font-bold">
-            {product.price.toLocaleString()} L.L
-          </p>
+        <div className="w-full lg:w-1/2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {isLoading ? (
+              <div className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-52 flex items-center justify-center bg-gray-800 rounded p-4">
+                Loading...
+              </div>
+            ) : (
+              products.map((product) => (
+                <div
+                  key={product._id}
+                  className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-64 flex flex-col justify-between items-center bg-gray-800 rounded p-4 cursor-pointer hover:bg-blue-900"
+                  onClick={() => addProductToCart(product)}
+                >
+                  <h4 className="text-[1.7rem] font-bold">{product.name}</h4>
+                  <img
+                    src={`${BASE_URL}/${product.image}`}
+                    alt={product.name}
+                    className="w-36"
+                  />
+
+                  <p className="mt-2 font-bold">
+                    {product.price.toLocaleString()} L.L
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
         </div>
-      ))
-    )}
-  </div>
-</div>
         <div className="w-full lg:w-[45%] flex flex-col items-stretch mt-8 lg:mt-0">
           <div className="bg-[#1a1a1a] text-white p-4 rounded">
             <table className="w-full mb-10">
@@ -134,11 +144,15 @@ function POSPage() {
                     key={cartProduct._id}
                     className="border-t border-gray-300"
                   >
-                    <td className="px-4 py-2 text-gray-300">{cartProduct.name}</td>
+                    <td className="px-4 py-2 text-gray-300">
+                      {cartProduct.name}
+                    </td>
                     <td className="px-4 py-2 text-gray-300">
                       {cartProduct.price.toLocaleString()} L.L
                     </td>
-                    <td className="px-4 py-2 text-gray-300">{cartProduct.quantity}</td>
+                    <td className="px-4 py-2 text-gray-300">
+                      {cartProduct.quantity}
+                    </td>
                     <td className="px-4 py-2 text-gray-300">
                       {cartProduct.totalAmount.toLocaleString()} L.L
                     </td>
