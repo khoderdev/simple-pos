@@ -2,11 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+/* .baloo-2 {
+  font-family: "Baloo 2", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+} */
+
 :root {
   /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
   line-height: 1.5;
+  font-family: "Baloo 2", sans-serif;
+  font-optical-sizing: auto;
   font-weight: 400;
-
+  font-style: normal;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #070f1b;
@@ -18,11 +27,11 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #fe0039;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #fff;
 }
 
 ::-webkit-scrollbar {
@@ -47,10 +56,49 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #fe0039;
 }
 button:focus,
 button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.btn {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+.btn:hover {
+  border-color: #fe0039;
+}
+.btn:focus,
+.btn:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.card {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 1em;
+  font-size: 4em;
+  font-weight: 700;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  box-shadow: 0 0 2px 1px #fe0039;
+}
+.card:hover {
+  border-color: #fe0039;
+}
+.card:focus,
+.card:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
@@ -60,7 +108,7 @@ button:focus-visible {
     background-color: #ffffff;
   }
   a:hover {
-    color: #747bff;
+    color: #fe0039;
   }
   button {
     background-color: #f9f9f9;
@@ -72,4 +120,78 @@ button:focus-visible {
 }
 .bg-dark-blue {
   background-color: #0a1627;
+}
+.bg-dark-blue {
+  background-color: #0a1627;
+}
+.bg-red-hover:hover {
+  background-color: #fe0039;
+  transition: background-color 0.25s;
+}
+
+.text-red {
+  color: #fe0039;
+}
+
+/* CSS */
+.cards {
+  align-items: center;
+  background-color: #1a1a1a;
+  border: 2px solid #0a162700;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-family: Inter, sans-serif;
+  font-size: 4em;
+  height: 180px;
+  justify-content: center;
+  line-height: 24px;
+  max-width: 100%;
+  padding: 0 25px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: border-color 0.25s;
+}
+
+.cards:after {
+  background-color: #fe0039;
+  border: 2px solid #fe0039;
+  border-radius: 8px;
+  content: "";
+  display: block;
+  height: 180px;
+  left: 0;
+  width: 100%;
+  position: absolute;
+  transform: translate(10px, 10px);
+  transition: transform 0.2s ease-out;
+  z-index: -1;
+}
+
+.cards:hover:after {
+  transform: translate(0, 0);
+}
+
+.cards:active {
+  background-color: #1a1a1a;
+  outline: 0;
+}
+
+.cards:hover {
+  outline: 0;
+  border: 1px solid #fe0039;
+  color: #fe0039;
+  transition: color 0.25s;
+}
+
+@media (min-width: 768px) {
+  .cards {
+    padding: 0 40px;
+  }
 }
