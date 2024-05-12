@@ -3,7 +3,7 @@ import axios from "axios";
 import { useReactToPrint } from "react-to-print";
 import Modal from "../components/Modal";
 
-const BASE_URL = "http://192.168.43.138:5000";
+const BASE_URL = "https://pos-backend-on9v.onrender.com";
 
 function POSPage() {
   const [products, setProducts] = useState([]);
@@ -15,7 +15,9 @@ function POSPage() {
 
   const fetchProducts = async () => {
     setIsLoading(true);
-    const result = await axios.get("http://192.168.43.138:5000/products");
+    const result = await axios.get(
+      "https://pos-backend-on9v.onrender.com/products"
+    );
     setProducts(await result.data);
     setIsLoading(false);
   };
@@ -47,7 +49,7 @@ function POSPage() {
   const placeOrder = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.43.138:5000/orders/new",
+        "https://pos-backend-on9v.onrender.com/orders/new",
         {
           items: cart.map((item) => ({
             productId: item._id,
@@ -90,18 +92,18 @@ function POSPage() {
 
   return (
     <>
-      <div className="flex flex-wrap w-full h-full justify-between">
-        <div className="w-full lg:w-[62%]">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex flex-wrap lg:flex-nowrap w-full h-full gap-2 justify-between p-2">
+        <div className="w-full lg:w-fit">
+          <div className="grid grid-cols-1 w-full sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3  gap-5">
             {isLoading ? (
-              <div className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-auto flex items-center justify-center bg-gray-800 rounded p-4">
+              <div className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-auto flex items-center justify-center bg-gray-800 rounded p-2 sm:p-4">
                 Loading...
               </div>
             ) : (
               products.map((product) => (
                 <div
                   key={product._id}
-                  className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-auto flex flex-col justify-between items-center bg-gray-800 rounded p-4 cursor-pointer bg-red-hover"
+                  className="w-full sm:w-auto lg:w-[calc(33.33% - 1rem)] xl:w-[calc(25% - 1rem)] h-auto flex flex-col justify-between items-center bg-gray-800 rounded p-2 sm:p-4 cursor-pointer bg-red-hover"
                   onClick={() => addProductToCart(product)}
                 >
                   <h4 className="text-[1.7rem] font-bold">{product.name}</h4>
@@ -119,17 +121,27 @@ function POSPage() {
             )}
           </div>
         </div>
-        <div className="w-full lg:w-[37%] flex flex-col items-stretch mt-8 lg:mt-0">
+
+        {/* Table */}
+        <div className="w-full lg:w-[50%] flex flex-col items-stretch mt-8 lg:mt-0">
           <div className="sticky top-2">
-            <div className="bg-[#1a1a1a] text-white p-4 rounded">
-              <table className="w-full mb-10">
+            <div className="bg-[#1a1a1a] text-white sm:p-2 rounded">
+              <table className="w-full mb-10 text-">
                 <thead>
                   <tr>
-                    <th className="text-left text-2xl px-4 py-2">Name</th>
-                    <th className="text-left text-2xl px-4 py-2">Price</th>
-                    <th className="text-left text-2xl px-4 py-2">Qty</th>
-                    <th className="text-left text-2xl px-4 py-2">Total</th>
-                    <th className="text-left text-2xl px-4 py-2">Action</th>
+                    <th className="text-left sm:text-xl sm:px-4 py-2">
+                      Name
+                    </th>
+                    <th className="text-left sm:text-xl sm:px-4 py-2">
+                      Price
+                    </th>
+                    <th className="text-left sm:text-xl sm:px-4 py-2">Qty</th>
+                    <th className="text-left sm:text-xl sm:px-4 py-2">
+                      Total
+                    </th>
+                    <th className="hidden sm:flex text-left sm:text-xl sm:px-4 py-2">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -152,7 +164,7 @@ function POSPage() {
                       </td>
                       <td className="px-4 py-2">
                         <button
-                          className="text-red px-2 py-1 rounded hover:border-red-600"
+                          className="hidden sm:flex text-red px-2 py-1 rounded hover:border-red-600"
                           onClick={() => removeProduct(cartProduct._id)}
                         >
                           Remove
@@ -163,19 +175,21 @@ function POSPage() {
                 </tbody>
               </table>
               <div className="flex justify-between items-center">
-                <p className="text-3xl text-red font-semibold">
+                <p className="text-2xl sm:text-3xl text-red font-semibold">
                   Total: {totalAmount.toLocaleString()} L.L
                 </p>
                 <div>
                   {totalAmount !== 0 ? (
                     <button
-                      className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-600 text-white"
+                      className="bg-blue-500 px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-blue-600 text-white"
                       onClick={placeOrder}
                     >
                       Place Order
                     </button>
                   ) : (
-                    <p className="text-sm">Please add a product to the cart</p>
+                    <p className="text-sm text-wrap">
+                      Please add a product to the cart
+                    </p>
                   )}
                 </div>
               </div>

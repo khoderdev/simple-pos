@@ -15,13 +15,13 @@ function Sales() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://192.168.43.138:5000/orders");
+      const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
           const itemsWithProducts = await Promise.all(
             order.items.map(async (item) => {
               const productResponse = await axios.get(
-                `http://192.168.43.138:5000/products/${item.product}`
+                `https://pos-backend-on9v.onrender.com/products/${item.product}`
               );
               const product = productResponse.data;
               return { ...item, name: product.name, price: product.price };
@@ -47,13 +47,14 @@ function Sales() {
   const handleFilter = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://192.168.43.138:5000/orders");
+      const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
+      // const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
           const itemsWithProducts = await Promise.all(
             order.items.map(async (item) => {
               const productResponse = await axios.get(
-                `http://192.168.43.138:5000/products/${item.product}`
+                `https://pos-backend-on9v.onrender.com/products/${item.product}`
               );
               const product = productResponse.data;
               return { ...item, name: product.name, price: product.price };
@@ -194,18 +195,18 @@ function Sales() {
                             <p className="text-red">Item {index + 1}</p>
                             <p className="text-gray-400">
                               Name:{" "}
-                              <span className="text-white">{item.name}</span>
+                              <span className="text-white ml-2">{item.name}</span>
                             </p>
                             <p className="text-gray-400">
                               Price:{" "}
-                              <span className="text-white">
+                              <span className="text-white ml-2">
                                 {" "}
                                 {item.price.toLocaleString()} L.L
                               </span>
                             </p>
                             <p className="text-gray-400">
                               Quantity:{" "}
-                              <span className="text-white">
+                              <span className="text-white ml-2">
                                 {item.quantity}
                               </span>
                             </p>
