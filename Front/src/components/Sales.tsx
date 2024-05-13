@@ -15,7 +15,9 @@ function Sales() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
+      const response = await axios.get(
+        "https://pos-backend-on9v.onrender.com/orders"
+      );
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
           const itemsWithProducts = await Promise.all(
@@ -47,7 +49,9 @@ function Sales() {
   const handleFilter = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
+      const response = await axios.get(
+        "https://pos-backend-on9v.onrender.com/orders"
+      );
       // const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
@@ -92,36 +96,40 @@ function Sales() {
       <h1 className="text-3xl font-bold mb-6 text-center">Sales Dashboard</h1>
 
       {/* Date filters */}
-      <div className="date-filter mb-16 flex justify-center items-center">
-        <label className="text-lg font-semibold mr-4">From:</label>
-        <input
-          type="date"
-          value={fromDate ? fromDate.toISOString().split("T")[0] : ""}
-          onChange={(e) =>
-            setFromDate(e.target.value ? new Date(e.target.value) : null)
-          }
-          className="rounded-md border border-gray-300 px-2 py-1 mr-4"
-        />
-        <label className="text-lg font-semibold mr-4">To:</label>
-        <input
-          type="date"
-          value={toDate ? toDate.toISOString().split("T")[0] : ""}
-          onChange={(e) =>
-            setToDate(e.target.value ? new Date(e.target.value) : null)
-          }
-          className="rounded-md border border-gray-300 px-2 py-1 mr-4"
-        />
-        <div>
+      <div className="w-full md:w-auto md:flex md:flex-row md:gap-5 date-filter mb-4 text-center flex flex-col justify-center items-center">
+        <label className="flex flex-col justify-center items-center text-xl text-blue-500 font-semibold mb-2">
+          From:
+          <input
+            type="date"
+            value={fromDate ? fromDate.toISOString().split("T")[0] : ""}
+            onChange={(e) =>
+              setFromDate(e.target.value ? new Date(e.target.value) : null)
+            }
+            className="text-white text-lg text-center rounded-md border border-gray-300 px-2 py-1 mb-2"
+          />
+        </label>
+        <label className="flex flex-col text-xl font-semibold mb-2 text-blue-500 ">
+          To:
+          <input
+            type="date"
+            value={toDate ? toDate.toISOString().split("T")[0] : ""}
+            onChange={(e) =>
+              setToDate(e.target.value ? new Date(e.target.value) : null)
+            }
+            className="text-white text-lg text-center justify-center items-center rounded-md border border-gray-300 px-2 py-1 mb-2"
+          />
+        </label>
+        <div className="flex w-full gap-2 items-center justify-around mt-2 px-10">
           <button
             onClick={handleFilter}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-4"
+            className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
           >
             Filter
           </button>
           {(fromDate || toDate) && (
             <button
               onClick={handleReset}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+              className="bg-gray-500 text-white px-3 py-1 rounded hover:bg-gray-600"
             >
               Clear
             </button>
@@ -143,7 +151,9 @@ function Sales() {
               {/* Header titles */}
               <div className="flex justify-between text-blue-500 border-b border-gray-700 pb-3 mb-3 sm:px-10">
                 <div className="text-lg font-bold">Order #</div>
-                <div className="text-lg font-bold mr-16 md:mr-0">Total Amount</div>
+                <div className="text-lg font-bold mr-16 md:mr-0">
+                  Total Amount
+                </div>
                 <div className="text-lg font-bold">Created Date</div>
               </div>
 
@@ -167,7 +177,9 @@ function Sales() {
                     }`}
                   >
                     <div className="flex justify-between items-center">
-                      <div className="text-lg pl-10 md:pl-16">{`${index + 1}`}</div>
+                      <div className="text-lg pl-10 md:pl-16">{`${
+                        index + 1
+                      }`}</div>
                       <div className="text-lg sm:ml-14">
                         {order.totalAmount.toLocaleString()} L.L
                       </div>
@@ -195,7 +207,9 @@ function Sales() {
                             <p className="text-red">Item {index + 1}</p>
                             <p className="text-gray-400">
                               Name:{" "}
-                              <span className="text-white ml-2">{item.name}</span>
+                              <span className="text-white ml-2">
+                                {item.name}
+                              </span>
                             </p>
                             <p className="text-gray-400">
                               Price:{" "}

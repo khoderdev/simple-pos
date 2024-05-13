@@ -125,21 +125,15 @@ function POSPage() {
         {/* Table */}
         <div className="w-full lg:w-[50%] flex flex-col items-stretch mt-8 lg:mt-0">
           <div className="sticky top-2">
-            <div className="bg-[#1a1a1a] text-white sm:p-2 rounded">
-              <table className="w-full mb-10 text-">
-                <thead>
+            <div className="bg-[#1a1a1a] text-white  sm:p-2 rounded">
+              <table className="w-full mb-10 text-center">
+                <thead className="w-full bg-red-500">
                   <tr>
-                    <th className="text-left sm:text-xl sm:px-4 py-2">
-                      Name
-                    </th>
-                    <th className="text-left sm:text-xl sm:px-4 py-2">
-                      Price
-                    </th>
-                    <th className="text-left sm:text-xl sm:px-4 py-2">Qty</th>
-                    <th className="text-left sm:text-xl sm:px-4 py-2">
-                      Total
-                    </th>
-                    <th className="hidden sm:flex text-left sm:text-xl sm:px-4 py-2">
+                    <th className="text-left pl-6 sm:text-center sm:pl-0 sm:text-xl  py-2">Name</th>
+                    <th className="text-center sm:text-xl  py-2">Price</th>
+                    <th className="text-center sm:text-xl  py-2">Qty</th>
+                    <th className="text-center sm:text-xl  py-2">Total</th>
+                    <th className="hidden sm:flex sm:text-center sm:text-xl pl-5 py-2">
                       Action
                     </th>
                   </tr>
@@ -150,7 +144,7 @@ function POSPage() {
                       key={cartProduct._id}
                       className="border-t border-gray-500"
                     >
-                      <td className="px-4 py-2 font-semibold text-gray-300">
+                      <td className="px-4 text-left py-2 font-semibold text-gray-300">
                         {cartProduct.name}
                       </td>
                       <td className="px-4 py-2 text-gray-300">
@@ -162,9 +156,9 @@ function POSPage() {
                       <td className="px-4 py-2 text-gray-300">
                         {cartProduct.totalAmount.toLocaleString()} L.L
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="hidden sm:flex px-4 py-2">
                         <button
-                          className="hidden sm:flex text-red px-2 py-1 rounded hover:border-red-600"
+                          className="text-red px-2 py-1 rounded hover:border-red-600"
                           onClick={() => removeProduct(cartProduct._id)}
                         >
                           Remove
