@@ -4,8 +4,12 @@ import HomePage from "./pages/HomePage";
 import POSPage from "./pages/POSPage";
 import { useLockContext } from "./contexts/LockContext";
 import Sales from "./components/Sales";
+import Tables from "./components/Tables";
 import Inventory from "./components/Inventory";
 import MainLayout from "./layouts/MainLayout";
+
+
+
 const LockedMessage = () => {
   return (
     <div>
@@ -32,12 +36,15 @@ function App() {
           {isLocked ? (
             <>
               <Route path="/pos" element={<LockedMessage />} />
+              <Route path="/tables" element={<LockedMessage />} />
               <Route path="/sales" element={<LockedMessage />} />
               <Route path="/inventory" element={<LockedMessage />} />
             </>
           ) : (
             <>
               <Route path="/pos" element={<POSPage />} />
+              <Route path="/pos/:tableId" element={<POSPage />} />
+              <Route path="/tables" element={<Tables />} />
               <Route path="/sales" element={<Sales />} />
               <Route path="/inventory" element={<Inventory />} />
             </>

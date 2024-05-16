@@ -1,3 +1,103 @@
+// const express = require("express");
+// const router = express.Router();
+// const Product = require("./productModel");
+// const Order = require("./salesModel");
+
+// // Create a new order
+// router.post("/orders/new", async (req, res) => {
+//   try {
+//     // Extract items array from the request body
+//     const { items, totalAmount } = req.body;
+
+//     // Create an array to store order items
+//     const orderItems = [];
+
+//     // Loop through each item in the items array
+//     for (const item of items) {
+//       // Find the product in the database by its ID
+//       const product = await Product.findById(item.productId);
+
+//       // If the product is found, add it to the order items array
+//       if (product) {
+//         orderItems.push({
+//           product: product._id, // Store the product ID
+//           quantity: item.quantity,
+//           totalAmount: item.price * item.quantity, // Calculate the total amount for the item
+//         });
+//       } else {
+//         // If the product is not found, return an error response
+//         return res
+//           .status(404)
+//           .json({ message: `Product with ID ${item.productId} not found` });
+//       }
+//     }
+
+//     // Create a new order with the order items array and total amount
+//     const order = new Order({
+//       items: orderItems,
+//       totalAmount,
+//     });
+
+//     // Save the new order to the database
+//     const newOrder = await order.save();
+
+//     // Return a success response with the new order data
+//     res.status(201).json(newOrder);
+//   } catch (error) {
+//     // If an error occurs, return an error response
+//     res.status(400).json({ message: error.message });
+//   }
+// });
+
+// // GET all orders
+// router.get("/orders", async (req, res) => {
+//   try {
+//     const orders = await Order.find().sort({ createdAt: -1 });
+//     res.json(orders);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+// // Delete an order
+// router.delete("/orders/:id", async (req, res) => {
+//   try {
+//     const order = await Order.findById(req.params.id);
+//     if (order) {
+//       await order.remove();
+//       res.json({ message: "Order deleted" });
+//     } else {
+//       res.status(404).json({ message: "Order not found" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+// // Update an order
+// router.put("/orders/:id", async (req, res) => {
+//   try {
+//     const order = await Order.findById(req.params.id);
+//     if (order) {
+//       // Update the order data
+//       order.items = req.body.items || order.items;
+//       order.totalAmount = req.body.totalAmount || order.totalAmount;
+
+//       // Save the updated order
+//       const updatedOrder = await order.save();
+//       res.json(updatedOrder);
+//     } else {
+//       res.status(404).json({ message: "Order not found" });
+//     }
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// });
+
+// module.exports = router;
+
+// salesRoutes.js
+
 const express = require("express");
 const router = express.Router();
 const Product = require("./productModel");
@@ -5,47 +105,39 @@ const Order = require("./salesModel");
 
 // Create a new order
 router.post("/orders/new", async (req, res) => {
+  const { items, totalAmount, tableId } = req.body;
+
   try {
-    // Extract items array from the request body
-    const { items, totalAmount } = req.body;
-
-    // Create an array to store order items
-    const orderItems = [];
-
-    // Loop through each item in the items array
-    for (const item of items) {
-      // Find the product in the database by its ID
-      const product = await Product.findById(item.productId);
-
-      // If the product is found, add it to the order items array
-      if (product) {
-        orderItems.push({
-          product: product._id, // Store the product ID
-          quantity: item.quantity,
-          totalAmount: item.price * item.quantity, // Calculate the total amount for the item
-        });
-      } else {
-        // If the product is not found, return an error response
-        return res
-          .status(404)
-          .json({ message: `Product with ID ${item.productId} not found` });
+    // Validate each item in the order
+    items.forEach((item) => {
+      if (!item.totalAmount || !item.productId) {
+        throw new Error(
+          "Each item in the order must have totalAmount and productId"
+        );
       }
-    }
-
-    // Create a new order with the order items array and total amount
-    const order = new Order({
-      items: orderItems,
-      totalAmount,
     });
 
-    // Save the new order to the database
-    const newOrder = await order.save();
-
-    // Return a success response with the new order data
-    res.status(201).json(newOrder);
+    const newOrder = new Order({
+      items,
+      totalAmount,
+      tableId,
+    });
+    const savedOrder = await newOrder.save();
+    res.status(201).json(savedOrder);
   } catch (error) {
-    // If an error occurs, return an error response
     res.status(400).json({ message: error.message });
+  }
+});
+
+// Get orders by table ID
+router.get("/orders/:tableId", async (req, res) => {
+  const tableId = req.params.tableId;
+
+  try {
+    const orders = await Order.find({ tableId });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -70,6 +162,7 @@ router.delete("/orders/:id", async (req, res) => {
       res.status(404).json({ message: "Order not found" });
     }
   } catch (error) {
+    ``;
     res.status(500).json({ message: error.message });
   }
 });
@@ -79,11 +172,10 @@ router.put("/orders/:id", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (order) {
-      // Update the order data
       order.items = req.body.items || order.items;
       order.totalAmount = req.body.totalAmount || order.totalAmount;
+      order.tableId = req.body.tableId || order.tableId;
 
-      // Save the updated order
       const updatedOrder = await order.save();
       res.json(updatedOrder);
     } else {

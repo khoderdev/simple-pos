@@ -13,13 +13,26 @@ export const Users = [
   { username: "ucef", password: "user123", role: "User" },
 ];
 
+export const productsAtom = atomWithStorage("Products",[]);
+export const isLoadingAtom = atom(false);
+export const cartAtom = atom([]);
+export const totalAmountAtom = atom(0);
+export const orderSummaryAtom = atom(null);
+export const isModalOpenAtom = atom(false);
+
 const store = createStore(
   ordersAtom,
   userNameAtom,
   isLoggedInAtom,
   tokenAtom,
   userRolesAtom,
-  persistedIsLoggedInAtom
+  persistedIsLoggedInAtom,
+  productsAtom,
+  isLoadingAtom,
+  cartAtom,
+  totalAmountAtom,
+  orderSummaryAtom,
+  isModalOpenAtom
 );
 
 export default store;

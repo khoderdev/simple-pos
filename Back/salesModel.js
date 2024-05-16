@@ -1,4 +1,5 @@
-// salesModel.js
+// 
+
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
@@ -21,6 +22,10 @@ const orderSchema = new mongoose.Schema({
     items: [orderItemSchema],
     totalAmount: {
         type: Number,
+        required: true
+    },
+    tableId: {
+        type: String, // Assuming tableId is a string, adjust the type if necessary
         required: true
     },
     createdAt: {

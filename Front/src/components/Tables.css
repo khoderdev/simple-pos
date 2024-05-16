@@ -1,0 +1,68 @@
+.tableGrid {
+    background-color: rgb(177, 238, 218);
+    border-radius: 20px;
+    padding: 10px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .grid {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .grid td {
+    padding: 20px;
+    border: 2px solid orange;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .grid td:hover {
+    opacity: 0.7;
+  }
+  
+  .reserved {
+    background: orange;
+    color: #fff;
+  }
+  
+  .reserved::after {
+    content: "RESERVED";
+  }
+  
+  .available::after {
+    content: "AVAILABLE";
+  }
+  
+  .available {
+    color: #333;
+  }
+  
+  .totalSeats {
+    background-color: #333;
+    border-radius: 20px;
+    padding: 10px;
+    width: 30%;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .left, .right {
+    width: 50%;
+    text-align: left;
+    margin: 0 auto;
+  }
+  
+  .left ul, .right ul {
+    padding: 0;
+  }
+  
+  .left h4, .right h4 {
+    margin-bottom: 10px;
+  }
+  
+  li {
+    list-style: none;
+  }
+  

@@ -21,7 +21,7 @@ const AddNewProducts = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get(
-        "https://pos-backend-on9v.onrender.com/products"
+        "http://localhost:5000/products"
       );
       const sortedProducts = response.data.sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -57,7 +57,7 @@ const AddNewProducts = () => {
       formData.append("image", newProduct.image);
 
       const response = await axios.post(
-        "https://pos-backend-on9v.onrender.com/products/new",
+        "http://localhost:5000/products/new",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -76,7 +76,7 @@ const AddNewProducts = () => {
   const deleteProduct = async (productId) => {
     try {
       await axios.delete(
-        `https://pos-backend-on9v.onrender.com/products/${productId}`
+        `http://localhost:5000/products/${productId}`
       );
       const updatedProducts = products.filter(
         (product) => product._id !== productId
@@ -109,7 +109,7 @@ const AddNewProducts = () => {
       formData.append("image", updatedFields.image);
 
       await axios.put(
-        `https://pos-backend-on9v.onrender.com/products/${productId}`,
+        `http://localhost:5000/products/${productId}`,
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -228,7 +228,7 @@ const AddNewProducts = () => {
             <div key={product._id}>
               <div className=" border border-gray-500 rounded-lg overflow-hidden p-2">
                 <img
-                  src={`https://pos-backend-on9v.onrender.com/${product.image}`}
+                  src={`http://localhost:5000/${product.image}`}
                   alt={product.name}
                   className="w-full h-64 object-contain"
                 />
