@@ -10,11 +10,12 @@ function Sales() {
 
   useEffect(() => {
     fetchOrders();
+    handleFilter();
   }, []);
 
   const fetchOrders = async () => {
+    setLoading(true); 
     try {
-      setLoading(true);
       const cachedOrders = localStorage.getItem("orders");
       if (cachedOrders) {
         setOrders(JSON.parse(cachedOrders));
@@ -39,10 +40,10 @@ function Sales() {
         setOrders(ordersWithProducts);
         localStorage.setItem("orders", JSON.stringify(ordersWithProducts));
       }
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching orders:", error);
-      setLoading(false);
+    } finally {
+      setLoading(false); // Set loading state to false after fetching orders
     }
   };
 
@@ -58,7 +59,6 @@ function Sales() {
       const response = await axios.get(
         "https://pos-backend-on9v.onrender.com/orders"
       );
-      // const response = await axios.get("https://pos-backend-on9v.onrender.com/orders");
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
           const itemsWithProducts = await Promise.all(
@@ -91,11 +91,16 @@ function Sales() {
     }
   };
 
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
   const handleReset = () => {
     setFromDate(null);
     setToDate(null);
-    fetchOrders();
+    // fetchOrders(); 
   };
+
 
   return (
     <div className="sales-container flex flex-col items-center">

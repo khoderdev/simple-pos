@@ -75,6 +75,9 @@ function POSPage() {
       setIsModalOpen(true);
       setCart([]);
       setTotalAmount(0);
+
+      // Fetch orders after placing an order and update localStorage
+      fetchOrders();
     } catch (error) {
       console.error("Error placing order:", error);
     }
