@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useReactToPrint } from "react-to-print";
-import Modal from "../components/Modal";
+import OrderSummaryModal from "../components/Modal";
 
 const BASE_URL = "https://pos-backend-on9v.onrender.com";
 
@@ -10,18 +9,30 @@ function POSPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [cart, setCart] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [orderSummary, setOrderSummary] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-
+  // Fetch products from localStorage or server
   const fetchProducts = async () => {
     setIsLoading(true);
-    const result = await axios.get(
-      "https://pos-backend-on9v.onrender.com/products"
-    );
-    setProducts(await result.data);
-    setIsLoading(false);
+    try {
+      const cachedProducts = localStorage.getItem("products");
+      if (cachedProducts) {
+        setProducts(JSON.parse(cachedProducts));
+      } else {
+        const response = await axios.get(`${BASE_URL}/products`);
+        const fetchedProducts = response.data;
+        setProducts(fetchedProducts);
+        localStorage.setItem("products", JSON.stringify(fetchedProducts));
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  // Function to add product to cart
   const addProductToCart = (product) => {
     const existingCartItemIndex = cart.findIndex(
       (item) => item._id === product._id
@@ -41,40 +52,43 @@ function POSPage() {
     }
   };
 
+  // Function to remove product from cart
   const removeProduct = (productId) => {
     const updatedCart = cart.filter((item) => item._id !== productId);
     setCart(updatedCart);
   };
 
+  // Function to place order
   const placeOrder = async () => {
     try {
-      const response = await axios.post(
-        "https://pos-backend-on9v.onrender.com/orders/new",
-        {
-          items: cart.map((item) => ({
-            productId: item._id,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-          totalAmount,
-        }
-      );
-      console.log("Order placed successfully:", response.data);
-      console.log("Items:", response.data.items);
-      setShowModal(true);
+      const response = await axios.post(`${BASE_URL}/orders/new`, {
+        items: cart.map((item) => ({
+          productId: item._id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+        totalAmount,
+      });
+      const orderDetails = response.data;
+      console.log("Order placed successfully:", orderDetails);
+      setOrderSummary(orderDetails);
+      setIsModalOpen(true);
       setCart([]);
-      // Remove the following line
       setTotalAmount(0);
     } catch (error) {
       console.error("Error placing order:", error);
     }
   };
 
-  const componentRef = useRef();
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
-  const handleReactToPrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
+  const handleClickOutsideModal = (event) => {
+    if (event.target.className === "modal") {
+      setIsModalOpen(false);
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -88,7 +102,17 @@ function POSPage() {
     setTotalAmount(newTotalAmount);
   }, [cart]);
 
-  const handleCloseModal = () => setShowModal(false);
+  useEffect(() => {
+    if (isModalOpen) {
+      document.addEventListener("click", handleClickOutsideModal);
+    } else {
+      document.removeEventListener("click", handleClickOutsideModal);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutsideModal);
+    };
+  }, [isModalOpen]);
 
   return (
     <>
@@ -112,7 +136,6 @@ function POSPage() {
                     alt={product.name}
                     className="w-36"
                   />
-
                   <p className="mt-2 font-bold">
                     {product.price.toLocaleString()} L.L
                   </p>
@@ -129,7 +152,9 @@ function POSPage() {
               <table className="w-full mb-10 text-center">
                 <thead className="w-full bg-red-500">
                   <tr>
-                    <th className="text-left pl-6 sm:text-center sm:pl-0 sm:text-xl  py-2">Name</th>
+                    <th className="text-left pl-6 sm:text-center sm:pl-0 sm:text-xl  py-2">
+                      Name
+                    </th>
                     <th className="text-center sm:text-xl  py-2">Price</th>
                     <th className="text-center sm:text-xl  py-2">Qty</th>
                     <th className="text-center sm:text-xl  py-2">Total</th>
@@ -191,11 +216,10 @@ function POSPage() {
           </div>
         </div>
       </div>
-      <Modal
-        show={showModal}
-        totalAmount={totalAmount}
-        onHide={handleCloseModal}
-        onPrint={handleReactToPrint}
+      <OrderSummaryModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        orderDetails={orderSummary}
       />
     </>
   );

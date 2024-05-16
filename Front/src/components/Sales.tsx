@@ -15,24 +15,30 @@ function Sales() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(
-        "https://pos-backend-on9v.onrender.com/orders"
-      );
-      const ordersWithProducts = await Promise.all(
-        response.data.map(async (order) => {
-          const itemsWithProducts = await Promise.all(
-            order.items.map(async (item) => {
-              const productResponse = await axios.get(
-                `https://pos-backend-on9v.onrender.com/products/${item.product}`
-              );
-              const product = productResponse.data;
-              return { ...item, name: product.name, price: product.price };
-            })
-          );
-          return { ...order, items: itemsWithProducts };
-        })
-      );
-      setOrders(ordersWithProducts);
+      const cachedOrders = localStorage.getItem("orders");
+      if (cachedOrders) {
+        setOrders(JSON.parse(cachedOrders));
+      } else {
+        const response = await axios.get(
+          "https://pos-backend-on9v.onrender.com/orders"
+        );
+        const ordersWithProducts = await Promise.all(
+          response.data.map(async (order) => {
+            const itemsWithProducts = await Promise.all(
+              order.items.map(async (item) => {
+                const productResponse = await axios.get(
+                  `https://pos-backend-on9v.onrender.com/products/${item.product}`
+                );
+                const product = productResponse.data;
+                return { ...item, name: product.name, price: product.price };
+              })
+            );
+            return { ...order, items: itemsWithProducts };
+          })
+        );
+        setOrders(ordersWithProducts);
+        localStorage.setItem("orders", JSON.stringify(ordersWithProducts));
+      }
       setLoading(false);
     } catch (error) {
       console.error("Error fetching orders:", error);
