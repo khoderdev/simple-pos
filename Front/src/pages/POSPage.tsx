@@ -150,7 +150,7 @@ function POSPage() {
 
         {/* Table */}
         <div className="w-full lg:w-[50%] flex flex-col items-stretch mt-8 lg:mt-0">
-          <div className="sticky top-2">
+          <div className="sticky top-24">
             <div className="bg-[#1a1a1a] text-white  sm:p-2 rounded">
               <table className="w-full mb-10 text-center">
                 <thead className="w-full bg-red-500">
