@@ -1,4 +1,3 @@
-// import React, { Children } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import POSPage from "./pages/POSPage";
@@ -7,8 +6,6 @@ import Sales from "./components/Sales";
 import Tables from "./components/Tables";
 import Inventory from "./components/Inventory";
 import MainLayout from "./layouts/MainLayout";
-
-
 
 const LockedMessage = () => {
   return (
@@ -35,7 +32,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           {isLocked ? (
             <>
-              <Route path="/pos" element={<LockedMessage />} />
+              <Route path="/pos/*" element={<LockedMessage />} />
               <Route path="/tables" element={<LockedMessage />} />
               <Route path="/sales" element={<LockedMessage />} />
               <Route path="/inventory" element={<LockedMessage />} />

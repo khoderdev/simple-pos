@@ -38,91 +38,55 @@
 //   };
 
 //   return (
-//     <div className="tables-container">
-//       <h1 className="table-heading">Tables</h1>
-//       <div className="grid-container">
-//         <DrawGrid
-//           seatAvailable={seatAvailable}
-//           seatReserved={seatReserved}
-//           onClickData={onClickData}
-//         />
-//       </div>
-//       <div className="total-seats">
-//         <AvailableList available={seatAvailable} />
-//         <ReservedList reserved={seatReserved} />
+//     <div className="justify-center items-center">
+//       <div className="tables-container">
+//         <h1 className="table-heading">Tables</h1>
+//         <div className="flex flex-col">
+//           <DrawGrid
+//             seatAvailable={seatAvailable}
+//             seatReserved={seatReserved}
+//             onClickData={onClickData}
+//           />
+//         </div>
 //       </div>
 //     </div>
 //   );
 // };
 
 // const DrawGrid = ({ seatAvailable, seatReserved, onClickData }) => {
-//   return (
-//     <div className="table-grid">
-//       <table className="grid">
-//         <tbody>
-//           <tr>
-//             {seatAvailable.map((row) => (
-//               <td
-//                 className="available"
-//                 key={row}
-//                 onClick={() => onClickData(row)}
-//               >
-//                 {row}
-//               </td>
-//             ))}
-//             {seatReserved.map((row) => (
-//               <td
-//                 className="reserved"
-//                 key={row}
-//                 onClick={() => onClickData(row)}
-//               >
-//                 {row}
-//               </td>
-//             ))}
-//           </tr>
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
+//   const allSeats = [...seatAvailable, ...seatReserved].sort((a, b) => {
+//     const aNum = parseInt(a.split(' ')[1]);
+//     const bNum = parseInt(b.split(' ')[1]);
+//     return aNum - bNum;
+//   });
 
-// const AvailableList = ({ available }) => {
-//   const seatCount = available.length;
 //   return (
-//     <div className="seat-list">
-//       <h2 className="list-heading">Available Tables</h2>
-//       <ul>
-//         {available.map((res) => (
-//           <li key={res}>{res}</li>
-//         ))}
-//       </ul>
-//       <p className="seat-count">{`Total: ${seatCount}`}</p>
-//     </div>
-//   );
-// };
-
-// const ReservedList = ({ reserved }) => {
-//   return (
-//     <div className="seat-list">
-//       <h2 className="list-heading">Reserved Tables</h2>
-//       <ul>
-//         {reserved.map((res) => (
-//           <li key={res}>{res}</li>
-//         ))}
-//       </ul>
-//       <p className="seat-count">{`Total: ${reserved.length}`}</p>
+//     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-6 p-2">
+//       {allSeats.map((table) => (
+//         <div
+//           className={`table ${seatAvailable.includes(table) ? 'available' : 'reserved'}`}
+//           key={table}
+//           onClick={() => onClickData(table)}
+//         >
+//           {table}
+//           <span className="status-text">
+//             {seatAvailable.includes(table) ? 'Available' : 'Reserved'}
+//           </span>
+//         </div>
+//       ))}
 //     </div>
 //   );
 // };
 
 // export default Tables;
 
+
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { atomWithStorage } from "jotai/utils";
 import "./Tables.css";
 
-const seatAvailableAtom = atomWithStorage("seatAvailable", [
+const tableAvailableAtom = atomWithStorage("tableAvailable", [
   "Table 1",
   "Table 2",
   "Table 3",
@@ -133,99 +97,66 @@ const seatAvailableAtom = atomWithStorage("seatAvailable", [
   "Table 8",
   "Table 9",
 ]);
-const seatReservedAtom = atomWithStorage("seatReserved", []);
+const tableReservedAtom = atomWithStorage("tableReserved", []);
 
 const Tables = () => {
-  const [seatAvailable, setSeatAvailable] = useAtom(seatAvailableAtom);
-  const [seatReserved, setSeatReserved] = useAtom(seatReservedAtom);
+  const [tableAvailable, setTableAvailable] = useAtom(tableAvailableAtom);
+  const [tableReserved, setTableReserved] = useAtom(tableReservedAtom);
   const navigate = useNavigate();
 
-  const onClickData = (seat) => {
-    if (seatReserved.includes(seat)) {
-      setSeatAvailable([...seatAvailable, seat]);
-      setSeatReserved(seatReserved.filter((res) => res !== seat));
+  const onClickData = (table) => {
+    if (tableReserved.includes(table)) {
+      setTableAvailable([...tableAvailable, table]);
+      setTableReserved(tableReserved.filter((res) => res !== table));
     } else {
-      setSeatReserved([...seatReserved, seat]);
-      setSeatAvailable(seatAvailable.filter((res) => res !== seat));
+      setTableReserved([...tableReserved, table]);
+      setTableAvailable(tableAvailable.filter((res) => res !== table));
     }
 
     // Set the selected table ID in localStorage
-    localStorage.setItem("selectedTableId", seat);
+    localStorage.setItem("selectedTableId", table);
 
     // Navigate to POSPage
-    navigate(`/pos/${seat}`);
+    navigate(`/pos/${table}`);
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="justify-center items-center">
       <div className="tables-container">
         <h1 className="table-heading">Tables</h1>
         <div className="flex flex-col">
           <DrawGrid
-            seatAvailable={seatAvailable}
-            seatReserved={seatReserved}
+            tableAvailable={tableAvailable}
+            tableReserved={tableReserved}
             onClickData={onClickData}
           />
-        </div>
-        <div className="total-seats">
-          <AvailableList available={seatAvailable} />
-          <ReservedList reserved={seatReserved} />
         </div>
       </div>
     </div>
   );
 };
 
-const DrawGrid = ({ seatAvailable, seatReserved, onClickData }) => {
+const DrawGrid = ({ tableAvailable, tableReserved, onClickData }) => {
+  const allTables = [...tableAvailable, ...tableReserved].sort((a, b) => {
+    const aNum = parseInt(a.split(' ')[1]);
+    const bNum = parseInt(b.split(' ')[1]);
+    return aNum - bNum;
+  });
+
   return (
-    <div className="table-grid">
-      {seatAvailable.map((table) => (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-6 p-2">
+      {allTables.map((table) => (
         <div
-          className="table available"
+          className={`table ${tableAvailable.includes(table) ? 'available' : 'reserved'}`}
           key={table}
           onClick={() => onClickData(table)}
         >
           {table}
+          <span className="status-text">
+            {tableAvailable.includes(table) ? 'Available' : 'Reserved'}
+          </span>
         </div>
       ))}
-      {seatReserved.map((table) => (
-        <div
-          className="table reserved"
-          key={table}
-          onClick={() => onClickData(table)}
-        >
-          {table}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const AvailableList = ({ available }) => {
-  const seatCount = available.length;
-  return (
-    <div className="seat-list">
-      <h2 className="list-heading">Available Tables</h2>
-      <ul>
-        {available.map((res) => (
-          <li key={res}>{res}</li>
-        ))}
-      </ul>
-      <p className="seat-count">{`Total: ${seatCount}`}</p>
-    </div>
-  );
-};
-
-const ReservedList = ({ reserved }) => {
-  return (
-    <div className="seat-list">
-      <h2 className="list-heading">Reserved Tables</h2>
-      <ul>
-        {reserved.map((res) => (
-          <li key={res}>{res}</li>
-        ))}
-      </ul>
-      <p className="seat-count">{`Total: ${reserved.length}`}</p>
     </div>
   );
 };
