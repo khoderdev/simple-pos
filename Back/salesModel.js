@@ -1,5 +1,3 @@
-// 
-
 const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
@@ -25,7 +23,7 @@ const orderSchema = new mongoose.Schema({
         required: true
     },
     tableId: {
-        type: String, // Assuming tableId is a string, adjust the type if necessary
+        type: String,
         required: true
     },
     createdAt: {

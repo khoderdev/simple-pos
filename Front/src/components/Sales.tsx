@@ -21,14 +21,14 @@ function Sales() {
         setOrders(JSON.parse(cachedOrders));
       } else {
         const response = await axios.get(
-          "http://localhost:5000/orders"
+          "https://pos-backend-on9v.onrender.com/orders"
         );
         const ordersWithProducts = await Promise.all(
           response.data.map(async (order) => {
             const itemsWithProducts = await Promise.all(
               order.items.map(async (item) => {
                 const productResponse = await axios.get(
-                  `http://localhost:5000/products/${item.product}`
+                  `https://pos-backend-on9v.onrender.com/products/${item.product}`
                 );
                 const product = productResponse.data;
                 return { ...item, name: product.name, price: product.price };
@@ -57,14 +57,14 @@ function Sales() {
     try {
       setLoading(true);
       const response = await axios.get(
-        "http://localhost:5000/orders"
+        "https://pos-backend-on9v.onrender.com/orders"
       );
       const ordersWithProducts = await Promise.all(
         response.data.map(async (order) => {
           const itemsWithProducts = await Promise.all(
             order.items.map(async (item) => {
               const productResponse = await axios.get(
-                `http://localhost:5000/products/${item.product}`
+                `https://pos-backend-on9v.onrender.com/products/${item.product}`
               );
               const product = productResponse.data;
               return { ...item, name: product.name, price: product.price };

@@ -2,7 +2,7 @@
 // // import axios from "axios";
 // // import OrderSummaryModal from "../components/Modal";
 
-// // const BASE_URL = "http://localhost:5000";
+// // const BASE_URL = "https://pos-backend-on9v.onrender.com";
 
 // // function POSPage() {
 // //   const [products, setProducts] = useState([]);
@@ -235,7 +235,7 @@
 // import axios from "axios";
 // import OrderSummaryModal from "../components/Modal";
 
-// const BASE_URL = "http://localhost:5000";
+// const BASE_URL = "https://pos-backend-on9v.onrender.com";
 
 // function POSPage() {
 //   const { tableId } = useParams(); // Get the table ID from route parameters
@@ -479,7 +479,7 @@ import {
   isModalOpenAtom,
 } from "../States/store";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://pos-backend-on9v.onrender.com";
 
 function POSPage() {
   const { tableId } = useParams(); // Get the table ID from route parameters
