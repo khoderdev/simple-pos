@@ -120,7 +120,6 @@ const Tables = () => {
       setTimeout(() => setShowToast(false), 3000);
     },
   });
-  
 
   const onClickData = async (table: Table) => {
     if (tableAvailable.includes(table)) {
@@ -130,7 +129,6 @@ const Tables = () => {
       refetch();
     }
   };
-  
 
   return (
     <div className="flex flex-col items-center">
@@ -211,55 +209,66 @@ const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
   }, []);
 
   return (
-    <div className="md:w-[60%] lg:w-[50%] xl:w-[40%] p-4 rounded-lg shadow-md bg-black">
+    <div className="w-96 p-4 rounded-lg shadow-md bg-gray-900">
       <h2 className="text-xl font-bold mb-4">Orders for {table}</h2>
-      <ul className="space-y-4">
-        {orders.length > 0 ? (
-          orders.map((order, index) => (
-            <li key={index} className="p-4 bg-gray-500 rounded-lg shadow-sm">
-              <p className="text-lg font-semibold">Status: {order.status}</p>
-              <p className="text-md text-gray-200">
+      {orders.length > 0 ? (
+        orders.map((order, index) => (
+          <div key={index} className="mb-4">
+            <div className="flex flex-col items-center justify-between mb-2">
+              <p className="text-lg font-semibold">
+                Status: <span className="text-green-500"> {order.status}</span>
+              </p>
+              <p className="text-lg font-semibold text-gray-200">
                 Total Amount:{" "}
                 <span className="text-green-500 font-semibold">
                   {order.totalAmount.toLocaleString()}
                 </span>
               </p>
-              <p className="text-sm text-gray-200">
-                Created At: {new Date(order.createdAt).toLocaleString()}
-              </p>
-              <ul className="mt-2 space-y-2">
+            </div>
+            <p className="text-sm mb-2 text-gray-200">
+              Created At: {new Date(order.createdAt).toLocaleString()}
+            </p>
+            <table className="w-full">
+              <thead>
+                <tr className="bg-red-500 text-lg font-semibold text-white">
+                  <th className="p-2 text-left">Item</th>
+                  <th className="p-2">Qty</th>
+                  <th className="p-2 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="bg-gray-800">
                 {order.items && order.items.length > 0 ? (
                   order.items.map((item, idx) => (
-                    <li
+                    <tr
                       key={idx}
-                      className="flex justify-between p-2 bg-red-500 rounded-md shadow-sm"
+                      className="text-md font-medium text-white border-b border-gray-700"
                     >
-                      <span className="text-md font-semibold text-black">
+                      <td className="p-2 text-left">
                         {productNames[item.product] || "Loading..."}
-                      </span>
-                      <span className="text-md text-center font-semibold text-black">
-                        {item.quantity}
-                      </span>
-                      <span className="text-md font-semibold text-black">
+                      </td>
+                      <td className="p-2 text-center">{item.quantity}</td>
+                      <td className="p-2 text-right">
                         {item.totalAmount.toLocaleString()} L.L
-                      </span>
-                    </li>
+                      </td>
+                    </tr>
                   ))
                 ) : (
-                  <li className="text-sm text-gray-500">
-                    No items in this order
-                  </li>
+                  <tr className="text-sm text-gray-500">
+                    <td colSpan="3" className="p-2">
+                      No items in this order
+                    </td>
+                  </tr>
                 )}
-              </ul>
-            </li>
-          ))
-        ) : (
-          <li className="text-sm text-gray-500">No orders for this table</li>
-        )}
-      </ul>
+              </tbody>
+            </table>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-gray-500">No orders for this table</p>
+      )}
       <button
         onClick={closeOrder}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+        className="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
       >
         Close Order
       </button>
@@ -268,7 +277,7 @@ const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
 };
 
 const Toast = ({ message }: ToastProps) => (
-  <div className="fixed bottom-4 right-4 px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg">
+  <div className="fixed top-4 right-4 px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg">
     {message}
   </div>
 );
