@@ -1,10 +1,46 @@
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
 import { atomWithStorage } from "jotai/utils";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import "./Tables.css";
 
-const tableAvailableAtom = atomWithStorage("tableAvailable", [
+type Table = string;
+
+interface Order {
+  status: string;
+  totalAmount: number;
+  createdAt: string;
+  items: OrderItem[];
+}
+
+interface OrderItem {
+  product: string;
+  quantity: number;
+  totalAmount: number;
+}
+
+interface ProductNameMap {
+  [productId: string]: string;
+}
+
+interface DrawGridProps {
+  tableAvailable: Table[];
+  tableReserved: Table[];
+  onClickData: (table: Table) => void;
+}
+
+interface OrderDetailsProps {
+  table: Table;
+  orders: Order[];
+  closeOrder: () => void;
+}
+
+interface ToastProps {
+  message: string;
+}
+
+const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
   "Table 1",
   "Table 2",
   "Table 3",
@@ -16,108 +52,117 @@ const tableAvailableAtom = atomWithStorage("tableAvailable", [
   "Table 9",
 ]);
 
-const tableReservedAtom = atomWithStorage("tableReserved", []);
+const tableReservedAtom = atomWithStorage<Table[]>("tableReserved", []);
+
+const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
+  const response = await fetch(
+    `http://localhost:5000/orders/table/${tableNumber}`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch orders");
+  }
+  const data = await response.json();
+  return data;
+};
+
+const closeOrder = async (tableNumber: string): Promise<void> => {
+  const response = await fetch(
+    `http://localhost:5000/orders/close/${tableNumber}`,
+    {
+      method: "POST",
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to close the order");
+  }
+  await response.json();
+};
 
 const Tables = () => {
   const [tableAvailable, setTableAvailable] = useAtom(tableAvailableAtom);
   const [tableReserved, setTableReserved] = useAtom(tableReservedAtom);
-  const [orders, setOrders] = useState([]);
-  const [selectedTable, setSelectedTable] = useState(null);
+  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+  const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const onClickData = async (table) => {
-    try {
-      const tableNumber = table.split(" ")[1];
+  const { data: orders, refetch } = useQuery<Order[]>({
+    queryKey: ["orders", selectedTable],
+    queryFn: () => fetchOrders(selectedTable!.split(" ")[1]),
+    enabled: !!selectedTable,
+  });
 
-      if (tableAvailable.includes(table)) {
-        setTableReserved([...tableReserved, table]);
-        setTableAvailable(tableAvailable.filter((res) => res !== table));
+  const reserveTableMutation = useMutation({
+    mutationFn: (table: Table) => {
+      return new Promise<void>((resolve) => {
+        setTableReserved((prev) => [...prev, table]);
+        setTableAvailable((prev) => prev.filter((res) => res !== table));
         localStorage.setItem("selectedTableId", table);
         navigate(`/pos/${table}`);
-      } else {
-        const response = await fetch(
-          `http://localhost:5000/orders/table/${tableNumber}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch orders");
-        }
-        const ordersData = await response.json();
-        setOrders(ordersData);
-        setSelectedTable(table);
-        console.log("Orders for table", table, ordersData);
-      }
-    } catch (error) {
-      console.error("Error fetching orders:", error.message);
-    }
-  };
+        resolve();
+      });
+    },
+  });
 
-  const closeOrder = async (tableNumber) => {
-    try {
-      const response = await fetch(
-        `http://localhost:5000/orders/close/${tableNumber}`,
-        {
-          method: "POST",
-        }
+  const closeOrderMutation = useMutation({
+    mutationFn: (tableNumber: string) => closeOrder(tableNumber),
+    onSuccess: (data, variables) => {
+      const tableNumber = variables;
+      setTableReserved((prev) =>
+        prev.filter((table) => table !== `Table ${tableNumber}`)
       );
-      if (!response.ok) {
-        throw new Error("Failed to close the order");
-      }
-      const result = await response.json();
-      console.log(result.message);
-
-      // Update UI accordingly
-      setTableReserved(
-        tableReserved.filter((table) => table !== `Table ${tableNumber}`)
-      );
-      setTableAvailable([...tableAvailable, `Table ${tableNumber}`]);
+      setTableAvailable((prev) => [...prev, `Table ${tableNumber}`]);
       setSelectedTable(null);
-      setOrders([]);
-    } catch (error) {
-      console.error("Error closing the order:", error.message);
+      queryClient.invalidateQueries({
+        queryKey: ["orders", `Table ${tableNumber}`],
+      });
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    },
+  });
+  
+
+  const onClickData = async (table: Table) => {
+    if (tableAvailable.includes(table)) {
+      reserveTableMutation.mutate(table);
+    } else {
+      setSelectedTable(table);
+      refetch();
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (selectedTable) {
-        const tableNumber = selectedTable.split(" ")[1];
-        const response = await fetch(
-          `http://localhost:5000/orders/table/${tableNumber}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch orders");
-        }
-        const ordersData = await response.json();
-        setOrders(ordersData);
-      }
-    };
-    fetchData();
-  }, [selectedTable]);
+  
 
   return (
-    <div className="justify-center items-center">
-      <div className="tables-container">
-        <h1 className="table-heading">Tables</h1>
-        <div className="flex flex-col">
+    <div className="flex flex-col items-center">
+      <div className="tables-container w-full max-w-4xl mx-auto">
+        <h1 className="table-heading text-2xl font-bold mb-4">Tables</h1>
+        <div className="flex flex-col space-y-4">
           <DrawGrid
             tableAvailable={tableAvailable}
             tableReserved={tableReserved}
             onClickData={onClickData}
           />
-          {selectedTable && orders.length > 0 && (
+          {selectedTable && orders && (
             <OrderDetails
               table={selectedTable}
               orders={orders}
-              closeOrder={closeOrder}
+              closeOrder={() =>
+                closeOrderMutation.mutate(selectedTable.split(" ")[1])
+              }
             />
           )}
         </div>
       </div>
+      {showToast && <Toast message="Order closed successfully" />}
     </div>
   );
 };
 
-const DrawGrid = ({ tableAvailable, tableReserved, onClickData }) => {
+const DrawGrid = ({
+  tableAvailable,
+  tableReserved,
+  onClickData,
+}: DrawGridProps) => {
   const allTables = [...tableAvailable, ...tableReserved].sort((a, b) => {
     const aNum = parseInt(a.split(" ")[1]);
     const bNum = parseInt(b.split(" ")[1]);
@@ -125,30 +170,27 @@ const DrawGrid = ({ tableAvailable, tableReserved, onClickData }) => {
   });
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-9 gap-6 p-2">
+    <div className="table-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {allTables.map((table) => (
         <div
-          className={`table ${
-            tableAvailable.includes(table) ? "available" : "reserved"
-          }`}
           key={table}
+          className={`table-item p-4 text-center rounded-lg shadow-md cursor-pointer ${
+            tableAvailable.includes(table) ? "bg-green-500" : "bg-red-500"
+          }`}
           onClick={() => onClickData(table)}
         >
           {table}
-          <span className="status-text">
-            {tableAvailable.includes(table) ? "Available" : "Reserved"}
-          </span>
         </div>
       ))}
     </div>
   );
 };
 
-const OrderDetails = ({ table, orders, closeOrder }) => {
-  const [productNames, setProductNames] = useState({});
+const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
+  const [productNames, setProductNames] = useState<ProductNameMap>({});
 
   const fetchProductNames = async () => {
-    const productNamesMap = {};
+    const productNamesMap: ProductNameMap = {};
     try {
       const response = await fetch(`http://localhost:5000/products`);
       if (!response.ok) {
@@ -168,72 +210,67 @@ const OrderDetails = ({ table, orders, closeOrder }) => {
     fetchProductNames();
   }, []);
 
-  const totalAmount = orders.reduce((acc, order) => {
-    return acc + order.items.reduce((acc, item) => acc + item.totalAmount, 0);
-  }, 0);
-
   return (
-    <div className="overflow-x-auto p-4 mt-4 text-xl font-semibold flex flex-col w-full lg:w-1/2">
-      <h2 className="text-3xl font-bold mb-2 text-left text-red-500">
-        Orders for {table}
-      </h2>
-      <table className="divide-y divide-gray-200">
-        <thead className="border border-gray-200">
-          <tr>
-            <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
-              Item
-            </th>
-            <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
-              Quantity
-            </th>
-            <th className="px-6 py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
-              Total
-            </th>
-          </tr>
-        </thead>
-        <tbody className=" divide-y divide-gray-200">
-          {orders.map((order, index) => (
-            <tr key={index} className="border border-gray-200">
-              <td className="px-6 py-4 whitespace-nowrap text-left">
-                {order.items.map((item, idx) => (
-                  <div key={idx}>
-                    <span className="font-medium text-green-500">
-                      {productNames[item.product] || "Unknown Product"}
-                    </span>
-                  </div>
-                ))}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-left">
-                {order.items.map((item, idx) => (
-                  <div key={idx}>{item.quantity}</div>
-                ))}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-left">
-                {order.items.map((item, idx) => (
-                  <div key={idx}>{item.totalAmount.toLocaleString()}</div>
-                ))}
-              </td>
-            </tr>
-          ))}
-          <tr className="border border-gray-200 ">
-            <td className="px-6 py-4 text-center" colSpan="2"></td>
-            <td className="px-6 py-4 whitespace-nowrap text-left">
-              {" "}
-              <span className="text-2xl font-bold text-red">Total: </span>
-              {totalAmount.toLocaleString()}{" "}
-              <span className="text-2xl">L.L</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div className="md:w-[60%] lg:w-[50%] xl:w-[40%] p-4 rounded-lg shadow-md bg-black">
+      <h2 className="text-xl font-bold mb-4">Orders for {table}</h2>
+      <ul className="space-y-4">
+        {orders.length > 0 ? (
+          orders.map((order, index) => (
+            <li key={index} className="p-4 bg-gray-500 rounded-lg shadow-sm">
+              <p className="text-lg font-semibold">Status: {order.status}</p>
+              <p className="text-md text-gray-200">
+                Total Amount:{" "}
+                <span className="text-green-500 font-semibold">
+                  {order.totalAmount.toLocaleString()}
+                </span>
+              </p>
+              <p className="text-sm text-gray-200">
+                Created At: {new Date(order.createdAt).toLocaleString()}
+              </p>
+              <ul className="mt-2 space-y-2">
+                {order.items && order.items.length > 0 ? (
+                  order.items.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="flex justify-between p-2 bg-red-500 rounded-md shadow-sm"
+                    >
+                      <span className="text-md font-semibold text-black">
+                        {productNames[item.product] || "Loading..."}
+                      </span>
+                      <span className="text-md text-center font-semibold text-black">
+                        {item.quantity}
+                      </span>
+                      <span className="text-md font-semibold text-black">
+                        {item.totalAmount.toLocaleString()} L.L
+                      </span>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-sm text-gray-500">
+                    No items in this order
+                  </li>
+                )}
+              </ul>
+            </li>
+          ))
+        ) : (
+          <li className="text-sm text-gray-500">No orders for this table</li>
+        )}
+      </ul>
       <button
-        className="mt-4 w-fit self-end px-6 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded"
-        onClick={() => closeOrder(table.split(" ")[1])}
+        onClick={closeOrder}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
       >
         Close Order
       </button>
     </div>
   );
 };
+
+const Toast = ({ message }: ToastProps) => (
+  <div className="fixed bottom-4 right-4 px-4 py-2 bg-green-500 text-white rounded-lg shadow-lg">
+    {message}
+  </div>
+);
 
 export default Tables;

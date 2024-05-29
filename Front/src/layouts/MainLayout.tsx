@@ -44,7 +44,7 @@ function MainLayout({ children }) {
           </Link>
           <div className="flex items-center">
             <div className="hidden sm:flex gap-3 items-center">
-              <button onClick={() => navigate("/pos")}>Orders</button>
+              {/* <button onClick={() => navigate("/pos")}>Orders</button> */}
               <button onClick={() => navigate("/tables")}>Tables</button>
               <button onClick={() => navigate("/sales")}>Sales</button>
               <button onClick={() => navigate("/inventory")}>Inventory</button>
