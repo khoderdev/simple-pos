@@ -1,5 +1,6 @@
 import { createStore, atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
+import { Order } from "../types/AllTypes";
 
 // Define atoms for different states
 export const ordersAtom = atomWithStorage("Orders", []);
@@ -13,7 +14,14 @@ export const Users = [
   { username: "ucef", password: "user123", role: "User" },
 ];
 
-export const productsAtom = atomWithStorage("Products",[]);
+export const startDateAtom = atomWithStorage<string>("startDate", "");
+export const endDateAtom = atomWithStorage<string>("endDate", "");
+export const selectedOrderAtom = atomWithStorage<Order | null>(
+  "selectedOrder",
+  null
+);
+
+export const productsAtom = atomWithStorage("Products", []);
 export const isLoadingAtom = atom(false);
 export const cartAtom = atom([]);
 export const totalAmountAtom = atom(0);
@@ -22,6 +30,9 @@ export const isModalOpenAtom = atom(false);
 
 const store = createStore(
   ordersAtom,
+  startDateAtom,
+  endDateAtom,
+  selectedOrderAtom,
   userNameAtom,
   isLoggedInAtom,
   tokenAtom,
