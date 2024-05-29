@@ -76,11 +76,19 @@ const Sales = () => {
     const newReport = (
       <div className="report p-4 text-white rounded-md">
         <h1 className="text-2xl !text-center font-bold mb-4">
-          Report from ({new Date(start).toLocaleDateString()} to{" "}
+          End of the day <br/> Report from ({new Date(start).toLocaleDateString()} to{" "}
           {new Date(end).toLocaleDateString()})
         </h1>
-        <h3 className="mb-2 mr-4 text-red font-semibold text-xl">Total Sales: {totalSales.toLocaleString()} L.L</h3>
-        <h3 className="mb-2 mr-4 text-red font-semibold text-xl">Total Orders: {totalOrders}</h3>
+        <h3 className="mt-10 mb-2 text-red font-semibold text-xl">
+          Total Sales:{" "}
+          <span className="text-green-500 ml-2">
+            {totalSales.toLocaleString()} L.L
+          </span>
+        </h3>
+        <h3 className="mb-2 mr-4 text-red font-semibold text-xl">
+          Total Orders:
+          <span className="text-green-500 ml-2">{totalOrders}</span>
+        </h3>
       </div>
     );
 
