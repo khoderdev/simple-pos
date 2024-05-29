@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const productRoutes = require('./productRoutes');
 const orderRoutes = require('./salesRoutes');
 
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -23,6 +24,7 @@ app.use('/uploads', express.static('uploads'));
 // Routes
 app.use('/', productRoutes);
 app.use('/', orderRoutes);
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
