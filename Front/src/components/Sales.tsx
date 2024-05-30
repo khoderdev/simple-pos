@@ -13,6 +13,19 @@ import {
 } from "../States/store";
 import { Order, Item } from "../types/AllTypes";
 
+const closeOrder = async (tableNumber: string): Promise<void> => {
+  const response = await fetch(
+    `http://localhost:5000/orders/close/${tableNumber}`,
+    {
+      method: "POST",
+    }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to close the order");
+  }
+  await response.json();
+};
+
 const Sales = () => {
   const [orders, setOrders] = useAtom<Order[]>(ordersAtom);
   const [loading, setLoading] = useAtom(isLoadingAtom);
@@ -76,7 +89,8 @@ const Sales = () => {
     const newReport = (
       <div className="report p-4 text-white rounded-md">
         <h1 className="text-2xl !text-center font-bold mb-4">
-          End of the day <br/> Report from ({new Date(start).toLocaleDateString()} to{" "}
+          End of the day <br /> Report from (
+          {new Date(start).toLocaleDateString()} to{" "}
           {new Date(end).toLocaleDateString()})
         </h1>
         <h3 className="mt-10 mb-2 text-red font-semibold text-xl">
@@ -104,6 +118,15 @@ const Sales = () => {
 
   const closeModal = () => {
     setIsModalOpen(false); // Close the modal
+  };
+
+  const handleCloseOrder = async (tableNumber: string) => {
+    try {
+      await closeOrder(tableNumber);
+      fetchOrders(); // Refresh the orders list after closing an order
+    } catch (error) {
+      console.error("Error closing order:", error);
+    }
   };
 
   return (
@@ -216,6 +239,16 @@ const Sales = () => {
                           </li>
                         ))}
                       </ul>
+                      {order.status === "open" && (
+                        <button
+                          onClick={() =>
+                            handleCloseOrder(order.tableId.split(" ")[1])
+                          }
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-4"
+                        >
+                          Close Order
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

@@ -4,41 +4,14 @@ import { atomWithStorage } from "jotai/utils";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import "./Tables.css";
-
-type Table = string;
-
-interface Order {
-  status: string;
-  totalAmount: number;
-  createdAt: string;
-  items: OrderItem[];
-}
-
-interface OrderItem {
-  product: string;
-  quantity: number;
-  totalAmount: number;
-}
-
-interface ProductNameMap {
-  [productId: string]: string;
-}
-
-interface DrawGridProps {
-  tableAvailable: Table[];
-  tableReserved: Table[];
-  onClickData: (table: Table) => void;
-}
-
-interface OrderDetailsProps {
-  table: Table;
-  orders: Order[];
-  closeOrder: () => void;
-}
-
-interface ToastProps {
-  message: string;
-}
+import {
+  Table,
+  Order,
+  ProductNameMap,
+  DrawGridProps,
+  OrderDetailsProps,
+  ToastProps,
+} from "../types/AllTypes";
 
 const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
   "Table 1",

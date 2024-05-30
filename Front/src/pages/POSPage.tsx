@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
@@ -11,17 +12,21 @@ import {
 } from "../States/store";
 import OrderSummaryModal from "../components/Modal";
 import { useNavigate, useParams } from "react-router-dom";
+import { CartItem, Product, Item, Order } from "../types/AllTypes";
 
 export const BASE_URL = "http://localhost:5000";
 
 function POSPage() {
   const { tableId } = useParams();
-  const [products, setProducts] = useAtom(productsAtom);
-  const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
-  const [cart, setCart] = useAtom(cartAtom);
-  const [totalAmount, setTotalAmount] = useAtom(totalAmountAtom);
-  const [orderSummary, setOrderSummary] = useAtom(orderSummaryAtom);
-  const [isModalOpen, setIsModalOpen] = useAtom(isModalOpenAtom);
+  const [products, setProducts] = useAtom<Product[]>(productsAtom);
+  const [isLoading, setIsLoading] = useAtom<boolean>(isLoadingAtom);
+  const [cart, setCart] = useAtom<CartItem[]>(cartAtom);
+  const [totalAmount, setTotalAmount] = useAtom<number>(totalAmountAtom);
+  const [orderSummary, setOrderSummary] = useAtom<Order | null>(
+    orderSummaryAtom
+  );
+  const [isModalOpen, setIsModalOpen] = useAtom<boolean>(isModalOpenAtom);
+
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
