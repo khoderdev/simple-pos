@@ -1,3 +1,5 @@
+import { ClosedOrderViews } from "./views/closedOrdersViews";
+
 // Define the Order type
 export interface Item {
   totalAmount: number;
@@ -8,6 +10,7 @@ export interface Item {
 }
 
 export interface Order {
+  tableId: any;
   _id: string;
   items: Item[];
   totalAmount: number;
@@ -54,3 +57,24 @@ export interface OrderDetailsProps {
 export interface ToastProps {
   message: string;
 }
+
+export enum CurrencyPosition {
+  Left = "left",
+  Right = "right",
+}
+
+export enum WeekStartDays {
+  Auto = -1,
+  Monday = 1,
+  Tuesday = 2,
+  Wednesday = 3,
+  Thursday = 4,
+  Friday = 5,
+  Saturday = 6,
+  Sunday = 0,
+}
+
+
+export type AppViews = {
+  closedOrders: ClosedOrderViews;
+};

@@ -11,7 +11,7 @@ import {
   DrawGridProps,
   OrderDetailsProps,
   ToastProps,
-} from "../types/AllTypes";
+} from "../AllTypes";
 
 const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
   "Table 1",

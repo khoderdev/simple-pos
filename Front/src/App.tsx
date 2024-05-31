@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import POSPage from "./pages/POSPage";
-import { POSProvider } from "./contexts/POSContext";
+import { AppContextProvider, I18nContextProvider } from './common/contexts';
 import { useLockContext } from "./contexts/LockContext";
 import Sales from "./components/Sales";
 import Tables from "./components/Tables";
@@ -27,31 +27,33 @@ function App() {
   const { isLocked } = useLockContext();
 
   return (
-    <POSProvider>
-      <Router>
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            {isLocked ? (
-              <>
-                <Route path="/pos/*" element={<LockedMessage />} />
-                <Route path="/tables" element={<LockedMessage />} />
-                <Route path="/sales" element={<LockedMessage />} />
-                <Route path="/inventory" element={<LockedMessage />} />
-              </>
-            ) : (
-              <>
-                <Route path="/pos" element={<POSPage />} />
-                <Route path="/pos/:tableId" element={<POSPage />} />
-                <Route path="/tables" element={<Tables />} />
-                <Route path="/sales" element={<Sales />} />
-                <Route path="/inventory" element={<Inventory />} />
-              </>
-            )}
-          </Routes>
-        </MainLayout>
-      </Router>
-    </POSProvider>
+    <I18nContextProvider>
+      <AppContextProvider>
+        <Router>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              {isLocked ? (
+                <>
+                  <Route path="/pos/*" element={<LockedMessage />} />
+                  <Route path="/tables" element={<LockedMessage />} />
+                  <Route path="/sales" element={<LockedMessage />} />
+                  <Route path="/inventory" element={<LockedMessage />} />
+                </>
+              ) : (
+                <>
+                  <Route path="/pos" element={<POSPage />} />
+                  <Route path="/pos/:tableId" element={<POSPage />} />
+                  <Route path="/tables" element={<Tables />} />
+                  <Route path="/sales" element={<Sales />} />
+                  <Route path="/inventory" element={<Inventory />} />
+                </>
+              )}
+            </Routes>
+          </MainLayout>
+        </Router>
+      </AppContextProvider>
+    </I18nContextProvider>
   );
 }
 
