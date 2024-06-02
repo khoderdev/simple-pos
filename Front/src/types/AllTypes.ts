@@ -15,12 +15,23 @@ export interface Order {
   status: string;
 }
 
-export type Product = {
+export interface Product {
+  createdAt: string | number | Date;
   _id: string;
   name: string;
-  image: string;
-  price: number;
-};
+  price: string;
+  quantity: number;
+  image: string | null;
+}
+
+export interface NewProduct {
+  name: string;
+  price: string;
+  quantity: number;
+  image: string | File | null;
+  isUploading: boolean;
+}
+
 
 export type CartItem = Product & {
   quantity: number;

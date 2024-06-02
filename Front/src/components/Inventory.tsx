@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useAtom } from "jotai/react";
+import { productsAtom } from "../States/store";
+import { NewProduct, Product } from "../types/AllTypes";
 
 const AddNewProducts = () => {
-  const [products, setProducts] = useState(() => {
-    const storedProducts = localStorage.getItem("products");
-    return storedProducts ? JSON.parse(storedProducts) : [];
-  });
-  const [newProduct, setNewProduct] = useState({
+  const [products, setProducts] = useAtom(productsAtom);
+  const [newProduct, setNewProduct] = useState<NewProduct>({
     name: "",
     price: "",
     quantity: 0,
     image: null,
     isUploading: false,
   });
-  const [editProduct, setEditProduct] = useState(null);
+  const [editProduct, setEditProduct] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -21,9 +21,12 @@ const AddNewProducts = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/products");
+      const response = await axios.get<Product[]>(
+        "http://localhost:5000/products"
+      );
       const sortedProducts = response.data.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
       setProducts(sortedProducts);
       localStorage.setItem("products", JSON.stringify(sortedProducts));
@@ -32,16 +35,18 @@ const AddNewProducts = () => {
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewProduct({ ...newProduct, [name]: value });
   };
 
-  const handleImageChange = (e) => {
-    setNewProduct({ ...newProduct, image: e.target.files[0] });
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setNewProduct({ ...newProduct, image: e.target.files[0] });
+    }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     setNewProduct({ ...newProduct, image: file });
@@ -53,10 +58,12 @@ const AddNewProducts = () => {
       const formData = new FormData();
       formData.append("name", newProduct.name);
       formData.append("price", newProduct.price);
-      formData.append("quantity", newProduct.quantity);
-      formData.append("image", newProduct.image);
+      formData.append("quantity", newProduct.quantity.toString());
+      if (newProduct.image) {
+        formData.append("image", newProduct.image);
+      }
 
-      const response = await axios.post(
+      const response = await axios.post<Product>(
         "http://localhost:5000/products/new",
         formData,
         {
@@ -79,7 +86,7 @@ const AddNewProducts = () => {
     }
   };
 
-  const deleteProduct = async (productId) => {
+  const deleteProduct = async (productId: string) => {
     try {
       await axios.delete(`http://localhost:5000/products/${productId}`);
       const updatedProducts = products.filter(
@@ -91,37 +98,70 @@ const AddNewProducts = () => {
     }
   };
 
-  const startEditing = (productId) => {
+  const startEditing = (productId: string) => {
     const productToEdit = products.find((product) => product._id === productId);
-    setNewProduct({
-      name: productToEdit.name,
-      price: productToEdit.price,
-      quantity: productToEdit.quantity,
-      image: productToEdit.image,
-    });
-    setEditProduct(productId);
+    if (productToEdit) {
+      setNewProduct({
+        name: productToEdit.name,
+        price: productToEdit.price,
+        quantity: productToEdit.quantity,
+        image: productToEdit.image,
+        isUploading: false,
+      });
+      setEditProduct(productId);
+    }
   };
 
   const cancelEditing = () => {
     setEditProduct(null);
+    // Clear the inputs after canceling editing
+    setNewProduct({
+      name: "",
+      price: "",
+      quantity: 0,
+      image: null,
+      isUploading: false,
+    });
   };
 
-  const saveProduct = async (productId, updatedFields) => {
+  const saveProduct = async (
+    productId: string,
+    updatedFields: Partial<Product>
+  ) => {
     try {
       const formData = new FormData();
-      formData.append("name", updatedFields.name);
-      formData.append("price", updatedFields.price);
-      formData.append("quantity", updatedFields.quantity);
-      formData.append("image", updatedFields.image);
+      formData.append("name", updatedFields.name || "");
+      formData.append("price", updatedFields.price || "");
+      formData.append("quantity", (updatedFields.quantity || 0).toString());
+      if (updatedFields.image) {
+        formData.append("image", updatedFields.image);
+      }
 
       await axios.put(`http://localhost:5000/products/${productId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       fetchProducts();
       setEditProduct(null);
+      // Clear the inputs after saving
+      setNewProduct({
+        name: "",
+        price: "",
+        quantity: 0,
+        image: null,
+        isUploading: false,
+      });
     } catch (error) {
       console.error("Error updating product:", error);
     }
+  };
+
+  const fileToDataURL = (file: File): Promise<string | null> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
   };
 
   return (
@@ -170,10 +210,12 @@ const AddNewProducts = () => {
         </label>
         <label
           className="flex flex-wrap cursor-pointer appearance-none justify-center rounded-md border border-dashed border-gray-300 px-3 py-6 text-sm transition hover:border-gray-400 focus:border-solid focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600 disabled:opacity-75 mb-4"
-          tabIndex="0"
           style={{ maxWidth: "300px" }}
         >
-          <span htmlFor="photo-dropbox" className="flex items-center space-x-2">
+          <label
+            htmlFor="photo-dropbox"
+            className="flex items-center space-x-2"
+          >
             {newProduct.image ? (
               <span className="text-xs font-medium text-green-500 truncate">
                 image uploaded
@@ -217,7 +259,8 @@ const AddNewProducts = () => {
               {newProduct.image ? "File Selected" : "Drop files to Attach, or"}{" "}
               <span className="text-blue-600 underline">browse</span>
             </span>
-          </span>
+          </label>
+
           <input
             type="file"
             className="sr-only"
@@ -286,11 +329,23 @@ const AddNewProducts = () => {
                     </div>
                     <div className="flex justify-between">
                       <button
-                        onClick={() => saveProduct(product._id, newProduct)}
+                        onClick={async () => {
+                          const updatedImage =
+                            newProduct.image instanceof File
+                              ? await fileToDataURL(newProduct.image)
+                              : null;
+                          saveProduct(product._id, {
+                            name: newProduct.name,
+                            price: newProduct.price,
+                            quantity: newProduct.quantity,
+                            image: updatedImage,
+                          });
+                        }}
                         className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                       >
                         Save
                       </button>
+
                       <button
                         onClick={cancelEditing}
                         className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
