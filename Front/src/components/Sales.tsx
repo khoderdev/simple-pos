@@ -27,7 +27,7 @@ const closeOrder = async (tableNumber: string): Promise<void> => {
 };
 
 const Sales = () => {
-  const [orders, setOrders] = useAtom<Order[]>(ordersAtom);
+  const [orders, setOrders] = useAtom(ordersAtom);
   const [loading, setLoading] = useAtom(isLoadingAtom);
   const [report, setReport] = useAtom(orderSummaryAtom);
   const [isModalOpen, setIsModalOpen] = useAtom(isModalOpenAtom);
