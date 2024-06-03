@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAtom } from "jotai/react";
 import { productsAtom } from "../States/store";
-import {  NewProduct, Product } from "../types/AllTypes";
+import { NewProduct, Product } from "../types/AllTypes";
 
 const AddNewProducts = () => {
   const [products, setProducts] = useAtom(productsAtom);
   const [newProduct, setNewProduct] = useState<NewProduct>({
     name: "",
-    price: "",
+    price: 0,
     quantity: 0,
     image: null,
     isUploading: false,
@@ -69,7 +69,7 @@ const AddNewProducts = () => {
       localStorage.setItem("products", JSON.stringify(updatedProducts));
       setNewProduct({
         name: "",
-        price: "",
+        price: 0,
         quantity: 0,
         image: null,
         isUploading: false,
@@ -111,7 +111,7 @@ const AddNewProducts = () => {
     // Clear the inputs after canceling editing
     setNewProduct({
       name: "",
-      price: "",
+      price: 0,
       quantity: 0,
       image: null,
       isUploading: false,
@@ -125,7 +125,7 @@ const AddNewProducts = () => {
     try {
       const formData = new FormData();
       formData.append("name", updatedFields.name || "");
-      formData.append("price", updatedFields.price || "");
+      formData.append("price", (updatedFields.price || 0).toString());
       formData.append("quantity", (updatedFields.quantity || 0).toString());
       if (updatedFields.image) {
         formData.append("image", updatedFields.image);
@@ -139,7 +139,7 @@ const AddNewProducts = () => {
       // Clear the inputs after saving
       setNewProduct({
         name: "",
-        price: "",
+        price: 0,
         quantity: 0,
         image: null,
         isUploading: false,

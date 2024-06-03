@@ -28,7 +28,7 @@ export interface Product {
 
 export interface NewProduct {
   name: string;
-  price: string;
+  price: number;
   quantity: number;
   image: string | File | null;
   isUploading: boolean;
