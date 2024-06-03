@@ -48,12 +48,38 @@ function POSPage() {
   };
 
   // Function to add product to cart
+  // const addProductToCart = (product) => {
+  //   const existingCartItemIndex = cart.findIndex(
+  //     (item) => item._id === product._id
+  //   );
+  //   if (existingCartItemIndex !== -1) {
+  //     const updatedCart = [...cart];
+  //     updatedCart[existingCartItemIndex].quantity++;
+  //     updatedCart[existingCartItemIndex].totalAmount += product.price;
+  //     setCart(updatedCart);
+  //   } else {
+  //     const newCartItem = {
+  //       ...product,
+  //       quantity: 1,
+  //       totalAmount: product.price,
+  //     };
+  //     setCart((prevCart) => [...prevCart, newCartItem]);
+  //   }
+  // };
+
+  // Function to add product to cart
   const addProductToCart = (product) => {
     const existingCartItemIndex = cart.findIndex(
       (item) => item._id === product._id
     );
     if (existingCartItemIndex !== -1) {
       const updatedCart = [...cart];
+      // Check if adding the quantity exceeds the available quantity for the product
+      if (product.quantity < updatedCart[existingCartItemIndex].quantity + 1) {
+        // Display a modal message indicating that the maximum available quantity has been reached
+        setIsModalOpen(true);
+        return;
+      }
       updatedCart[existingCartItemIndex].quantity++;
       updatedCart[existingCartItemIndex].totalAmount += product.price;
       setCart(updatedCart);
