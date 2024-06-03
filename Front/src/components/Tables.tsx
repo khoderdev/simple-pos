@@ -1,6 +1,5 @@
 import { useAtom } from "jotai";
 import { useNavigate } from "react-router-dom";
-import { atomWithStorage } from "jotai/utils";
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import "./Tables.css";
@@ -13,19 +12,7 @@ import {
   ToastProps,
 } from "../types/AllTypes";
 
-const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
-  "Table 1",
-  "Table 2",
-  "Table 3",
-  "Table 4",
-  "Table 5",
-  "Table 6",
-  "Table 7",
-  "Table 8",
-  "Table 9",
-]);
-
-const tableReservedAtom = atomWithStorage<Table[]>("tableReserved", []);
+import { tableAvailableAtom, tableReservedAtom } from "../States/store";
 
 const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
   try {
@@ -69,7 +56,7 @@ const Tables = () => {
   const queryClient = useQueryClient();
   const [latestOrder, setLatestOrder] = useState<Order | null>(null);
 
-  const { data: orders } = useQuery<Order[]>({
+  useQuery<Order[]>({
     queryKey: ["orders", selectedTable],
     queryFn: () => fetchOrders(selectedTable!.split(" ")[1]),
     enabled: !!selectedTable,
@@ -100,20 +87,135 @@ const Tables = () => {
     }
   }, [selectedTable]);
 
+  // const reserveTable = async (table: Table) => {
+  //   try {
+  //     // Simulate a delay to mimic async operation
+  //     await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  //     // Update local state to mark the table as reserved
+  //     setTableReserved((prev) => [...prev, table]);
+  //     setTableAvailable((prev) => prev.filter((res) => res !== table));
+
+  //     // Update local storage with the selected table ID
+  //     localStorage.setItem("selectedTableId", table);
+
+  //     // Navigate to the POS page
+  //     navigate(`/pos/${table}`);
+  //   } catch (error) {
+  //     console.error("Error reserving table:", error.message);
+  //     // Handle error if needed
+  //   }
+  // };
+
+  // Update the reserveTable function to set isReserved to true when reserving a table
+  const reserveTable = async (table: Table) => {
+    try {
+      // Simulate a delay to mimic async operation
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Update local state to mark the table as reserved
+      setTableReserved((prev) => [...prev, table]);
+      setTableAvailable((prev) => prev.filter((res) => res !== table));
+
+      // Update the reservation status of the table in the backend
+      await updateTableReservationStatus(table, true);
+
+      // Update local storage with the selected table ID
+      localStorage.setItem("selectedTableId", table);
+
+      // Navigate to the POS page
+      navigate(`/pos/${table}`);
+    } catch (error) {
+      console.error("Error reserving table:", error.message);
+      // Handle error if needed
+    }
+  };
+
+  // Function to update the reservation status of a table in the backend
+  const updateTableReservationStatus = async (
+    tableId: string,
+    isReserved: boolean
+  ) => {
+    try {
+      const response = await fetch(`http://localhost:5000/tables/reserved`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tableId, isReserved }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update table reservation status");
+      }
+    } catch (error) {
+      throw new Error(
+        `Error updating table reservation status: ${error.message}`
+      );
+    }
+  };
+
+  // Update the closeOrder function to set isReserved to false when closing an order
+  const closeOrder = async (tableNumber: string): Promise<void> => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/orders/close/${tableNumber}`,
+        {
+          method: "POST",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to close the order");
+      }
+
+      // Update the reservation status of the table in the backend
+      await updateTableReservationStatus(tableNumber, false);
+
+      await response.json();
+    } catch (error) {
+      console.error("Error closing order:", error.message);
+      // Handle error if needed
+    }
+  };
+
+  const onClickData = async (table: Table) => {
+    if (tableAvailable.includes(table)) {
+      await reserveTable(table);
+    } else {
+      setSelectedTable(table);
+      // Fetch orders for the selected table here
+      await fetchOrders(table.split(" ")[1]);
+    }
+  };
+
   // console.log("Selected Table:", selectedTable);
   // console.log("Orders:", orders);
 
-  const reserveTableMutation = useMutation({
-    mutationFn: (table: Table) => {
-      return new Promise<void>((resolve) => {
-        setTableReserved((prev) => [...prev, table]);
-        setTableAvailable((prev) => prev.filter((res) => res !== table));
-        localStorage.setItem("selectedTableId", table);
-        navigate(`/pos/${table}`);
-        resolve();
-      });
-    },
-  });
+  // const reserveTableMutation = useMutation({
+  //   mutationFn: (table: Table) => {
+  //     return new Promise<void>((resolve) => {
+  //       setTableReserved((prev) => [...prev, table]);
+  //       setTableAvailable((prev) => prev.filter((res) => res !== table));
+  //       localStorage.setItem("selectedTableId", table);
+  //       navigate(`/pos/${table}`);
+  //       resolve();
+  //     });
+  //   },
+  // });
+
+  // const reserveTableMutation = useMutation({
+  //   mutationFn: async (table: Table) => {
+  //     const orders = await fetchOrders(table.split(" ")[1]);
+  //     if (orders.length > 0) {
+  //       setTableReserved((prev) => [...prev, table]);
+  //       setTableAvailable((prev) => prev.filter((res) => res !== table));
+  //       localStorage.setItem("selectedTableId", table);
+  //       navigate(`/pos/${table}`);
+  //     } else {
+  //       // Display an error message or handle the situation where there are no orders
+  //       console.log("Cannot reserve the table without orders");
+  //     }
+  //   },
+  // });
 
   // console.log("Selected Table:", selectedTable);
   // console.log("Orders:", orders);
@@ -138,15 +240,15 @@ const Tables = () => {
   // console.log("Selected Table:", selectedTable);
   // console.log("Orders:", orders);
 
-  const onClickData = async (table: Table) => {
-    if (tableAvailable.includes(table)) {
-      reserveTableMutation.mutate(table);
-    } else {
-      setSelectedTable(table);
-      // Fetch orders for the selected table here
-      await fetchOrders(table.split(" ")[1]);
-    }
-  };
+  // const onClickData = async (table: Table) => {
+  //   if (tableAvailable.includes(table)) {
+  //     reserveTableMutation.mutate(table);
+  //   } else {
+  //     setSelectedTable(table);
+  //     // Fetch orders for the selected table here
+  //     await fetchOrders(table.split(" ")[1]);
+  //   }
+  // };
 
   // console.log("Selected Table:", selectedTable);
   // console.log("Orders:", orders);

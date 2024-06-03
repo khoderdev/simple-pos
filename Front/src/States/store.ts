@@ -165,7 +165,9 @@ import { atom, createStore } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import { CartItem, Order, Product, Table } from "../types/AllTypes";
 
+// export const ordersAtom = atomWithStorage<Order[]>("Order",[]);
 export const ordersAtom = atom<Order[]>([]);
+export const orderStatusAtom = atom<{ [key: string]: string }>({});
 export const persistedIsLoggedInAtom = atomWithStorage("isLoggedIn", false);
 export const isLoggedInAtom = atom(false);
 export const tokenAtom = atom("");
@@ -180,11 +182,26 @@ export const cartAtom = atom<CartItem[]>([]);
 export const totalAmountAtom = atom(0);
 export const orderSummaryAtom = atom<JSX.Element | null>(null); // Update type here
 export const isModalOpenAtom = atom(false);
-export const tableAvailableAtom = atom<Table[]>([]);
-export const tableReservedAtom = atom<Table[]>([]);
+// export const tableAvailableAtom = atom<Table[]>([]);
+// export const tableReservedAtom = atom<Table[]>([]);
+
+export const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
+  "Table 1",
+  "Table 2",
+  "Table 3",
+  "Table 4",
+  "Table 5",
+  "Table 6",
+  "Table 7",
+  "Table 8",
+  "Table 9",
+]);
+
+export const tableReservedAtom = atomWithStorage<Table[]>("tableReserved", []);
 
 const store = createStore(
   ordersAtom,
+  orderStatusAtom,
   startDateAtom,
   endDateAtom,
   selectedOrderAtom,
