@@ -12,7 +12,8 @@ import {
 import OrderSummaryModal from "../components/Modal";
 import { useNavigate, useParams } from "react-router-dom";
 import { CartItem, Product, Order } from "../types/AllTypes";
-
+import { useState } from "react";
+import Modal from "../components/Modal";
 export const BASE_URL = "http://localhost:5000";
 
 function POSPage() {
@@ -25,7 +26,7 @@ function POSPage() {
     orderSummaryAtom
   );
   const [isModalOpen, setIsModalOpen] = useAtom<boolean>(isModalOpenAtom);
-
+  const [modalMessage, setModalMessage] = useState("");
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
@@ -48,26 +49,6 @@ function POSPage() {
   };
 
   // Function to add product to cart
-  // const addProductToCart = (product) => {
-  //   const existingCartItemIndex = cart.findIndex(
-  //     (item) => item._id === product._id
-  //   );
-  //   if (existingCartItemIndex !== -1) {
-  //     const updatedCart = [...cart];
-  //     updatedCart[existingCartItemIndex].quantity++;
-  //     updatedCart[existingCartItemIndex].totalAmount += product.price;
-  //     setCart(updatedCart);
-  //   } else {
-  //     const newCartItem = {
-  //       ...product,
-  //       quantity: 1,
-  //       totalAmount: product.price,
-  //     };
-  //     setCart((prevCart) => [...prevCart, newCartItem]);
-  //   }
-  // };
-
-  // Function to add product to cart
   const addProductToCart = (product) => {
     const existingCartItemIndex = cart.findIndex(
       (item) => item._id === product._id
@@ -77,6 +58,9 @@ function POSPage() {
       // Check if adding the quantity exceeds the available quantity for the product
       if (product.quantity < updatedCart[existingCartItemIndex].quantity + 1) {
         // Display a modal message indicating that the maximum available quantity has been reached
+        setModalMessage(
+          "You have reached the maximum available quantity for this product."
+        );
         setIsModalOpen(true);
         return;
       }
@@ -100,8 +84,48 @@ function POSPage() {
   };
 
   // Function to place order
+  // const placeOrder = async () => {
+  //   try {
+  //     const response = await axios.post(`${BASE_URL}/orders/new`, {
+  //       items: cart.map((item) => ({
+  //         productId: item._id,
+  //         quantity: item.quantity,
+  //         price: item.price,
+  //         totalAmount: item.totalAmount,
+  //         product: item,
+  //       })),
+  //       totalAmount,
+  //       tableId,
+  //     });
+  //     const orderDetails = response.data;
+  //     console.log("Order placed successfully:", orderDetails);
+  //     setOrderSummary(orderDetails);
+  //     setIsModalOpen(true);
+  //     setCart([]);
+  //     setTotalAmount(0);
+
+  //     // Check if orderDetails.items is not empty before extracting productId
+  //     if (orderDetails.items && orderDetails.items.length > 0) {
+  //       const productId = orderDetails.items[0].product; // Assuming product ID is stored under 'product'
+  //       // Deduct product quantities
+  //       await deductProductQuantities(cart, productId);
+  //     } else {
+  //       console.error("Error: No items found in order details.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error placing order:", error);
+  //   }
+  // };
+
+  // Function to place order
   const placeOrder = async () => {
     try {
+      // Check if any item in the cart has a quantity of 0
+      const zeroQuantityItems = cart.filter((item) => item.quantity === 0);
+      if (zeroQuantityItems.length > 0) {
+        throw new Error("One or more items in the cart are not available.");
+      }
+
       const response = await axios.post(`${BASE_URL}/orders/new`, {
         items: cart.map((item) => ({
           productId: item._id,
@@ -130,6 +154,12 @@ function POSPage() {
       }
     } catch (error) {
       console.error("Error placing order:", error);
+      // Display user-friendly error message
+      if (error.response && error.response.status === 400) {
+        alert(error.response.data.message || "Failed to place order.");
+      } else {
+        alert("Failed to place order. Please try again later.");
+      }
     }
   };
 
@@ -161,9 +191,15 @@ function POSPage() {
     }
   };
 
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  //   navigate("/tables"); // Navigate here instead
+  // };
+  // Function to close the modal message
   const handleCloseModal = () => {
     setIsModalOpen(false);
-    navigate("/tables"); // Navigate here instead
+    setModalMessage("");
+    navigate("/tables");
   };
 
   const handleClickOutsideModal = (event) => {
@@ -308,6 +344,12 @@ function POSPage() {
         onClose={handleCloseModal}
         orderDetails={orderSummary}
       />
+      {isModalOpen && (
+        <Modal onClose={handleCloseModal}>
+          <p>{modalMessage}</p>
+          <button onClick={handleCloseModal}>Close</button>
+        </Modal>
+      )}
     </>
   );
 }
