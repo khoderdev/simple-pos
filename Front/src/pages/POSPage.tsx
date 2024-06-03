@@ -123,6 +123,7 @@ function POSPage() {
       // Check if orderDetails.items is not empty before extracting productId
       if (orderDetails.items && orderDetails.items.length > 0) {
         const productId = orderDetails.items[0].product; // Assuming product ID is stored under 'product'
+
         // Deduct product quantities
         await deductProductQuantities(cart, productId, setProducts, products);
       } else {
@@ -200,7 +201,7 @@ function POSPage() {
       newTotalAmount += item.totalAmount;
     });
     setTotalAmount(newTotalAmount);
-  }, [cart]);
+  }, [cart, setTotalAmount]);
 
   useEffect(() => {
     if (isModalOpen) {
@@ -325,12 +326,6 @@ function POSPage() {
         onClose={handleCloseModal}
         orderDetails={orderSummary}
       />
-      {isModalOpen && (
-        <ModalDynamic onClose={handleCloseModal}>
-          <p>{modalMessage}</p>
-          <button onClick={handleCloseModal}>Close</button>
-        </ModalDynamic>
-      )}
     </>
   );
 }

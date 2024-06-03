@@ -68,6 +68,12 @@ export interface ToastProps {
   message: string;
 }
 
+export interface OrderSummaryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  orderDetails: Order | null;
+}
+
 export interface ModalProps {
   onClose: MouseEventHandler<HTMLDivElement>;
   children: ReactNode;

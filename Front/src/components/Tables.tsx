@@ -28,14 +28,23 @@ const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
 const tableReservedAtom = atomWithStorage<Table[]>("tableReserved", []);
 
 const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
-  const response = await fetch(
-    `http://localhost:5000/orders/table/${tableNumber}`
-  );
-  if (!response.ok) {
-    throw new Error("Failed to fetch orders");
+  try {
+    const response = await fetch(
+      `http://localhost:5000/orders/table/${tableNumber}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch orders");
+    }
+    const orders = await response.json();
+
+    // Return only the most recent order for the table
+    const latestOrder = orders.length > 0 ? [orders[orders.length - 1]] : [];
+    console.log("Fetched orders for table", tableNumber, ":", latestOrder);
+    return latestOrder;
+  } catch (error) {
+    console.error("Error fetching orders:", error.message);
+    return [];
   }
-  const data = await response.json();
-  return data;
 };
 
 const closeOrder = async (tableNumber: string): Promise<void> => {
@@ -58,12 +67,41 @@ const Tables = () => {
   const [showToast, setShowToast] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [latestOrder, setLatestOrder] = useState<Order | null>(null);
 
-  const { data: orders, refetch } = useQuery<Order[]>({
+  const { data: orders } = useQuery<Order[]>({
     queryKey: ["orders", selectedTable],
     queryFn: () => fetchOrders(selectedTable!.split(" ")[1]),
     enabled: !!selectedTable,
   });
+
+  // Function to fetch the latest order for a table
+  const fetchLatestOrder = async (tableNumber: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:5000/orders/table/${tableNumber}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch orders");
+      }
+      const orders = await response.json();
+      // Return only the most recent order for the table
+      const latestOrder = orders.length > 0 ? orders[orders.length - 1] : null;
+      setLatestOrder(latestOrder);
+    } catch (error) {
+      console.error("Error fetching orders:", error.message);
+      setLatestOrder(null);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedTable) {
+      fetchLatestOrder(selectedTable.split(" ")[1]);
+    }
+  }, [selectedTable]);
+
+  // console.log("Selected Table:", selectedTable);
+  // console.log("Orders:", orders);
 
   const reserveTableMutation = useMutation({
     mutationFn: (table: Table) => {
@@ -77,9 +115,12 @@ const Tables = () => {
     },
   });
 
+  // console.log("Selected Table:", selectedTable);
+  // console.log("Orders:", orders);
+
   const closeOrderMutation = useMutation({
     mutationFn: (tableNumber: string) => closeOrder(tableNumber),
-    onSuccess: (data, variables) => {
+    onSuccess: (_data, variables) => {
       const tableNumber = variables;
       setTableReserved((prev) =>
         prev.filter((table) => table !== `Table ${tableNumber}`)
@@ -94,14 +135,21 @@ const Tables = () => {
     },
   });
 
+  // console.log("Selected Table:", selectedTable);
+  // console.log("Orders:", orders);
+
   const onClickData = async (table: Table) => {
     if (tableAvailable.includes(table)) {
       reserveTableMutation.mutate(table);
     } else {
       setSelectedTable(table);
-      refetch();
+      // Fetch orders for the selected table here
+      await fetchOrders(table.split(" ")[1]);
     }
   };
+
+  // console.log("Selected Table:", selectedTable);
+  // console.log("Orders:", orders);
 
   return (
     <div className="flex flex-col items-center">
@@ -113,10 +161,10 @@ const Tables = () => {
             tableReserved={tableReserved}
             onClickData={onClickData}
           />
-          {selectedTable && orders && (
+          {selectedTable && latestOrder && (
             <OrderDetails
               table={selectedTable}
-              orders={orders}
+              orders={[latestOrder]}
               closeOrder={() =>
                 closeOrderMutation.mutate(selectedTable.split(" ")[1])
               }
@@ -168,9 +216,11 @@ const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
         throw new Error("Failed to fetch product names");
       }
       const productsData = await response.json();
-      productsData.forEach((product) => {
-        productNamesMap[product._id] = product.name;
-      });
+      productsData.forEach(
+        (product: { _id: string | number; name: string }) => {
+          productNamesMap[product._id] = product.name;
+        }
+      );
       setProductNames(productNamesMap);
     } catch (error) {
       console.error("Error fetching product names:", error.message);
