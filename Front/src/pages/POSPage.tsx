@@ -19,8 +19,6 @@ import {
   Order,
 } from "../types/AllTypes";
 import { useState } from "react";
-import Modal from "../components/Modal";
-import ModalDynamic from "../components/ModalDynamic";
 export const BASE_URL = "http://localhost:5000";
 
 function POSPage() {
@@ -36,7 +34,7 @@ function POSPage() {
   ] = useAtom<Order | null>(orderSummaryAtom);
 
   const [isModalOpen, setIsModalOpen] = useAtom<boolean>(isModalOpenAtom);
-  const [modalMessage, setModalMessage] = useState("");
+  const [, setModalMessage] = useState("");
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
