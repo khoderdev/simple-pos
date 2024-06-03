@@ -1,3 +1,5 @@
+import { MouseEventHandler, ReactNode } from "react";
+
 // Define the Order type
 export interface Item {
   totalAmount: number;
@@ -19,7 +21,7 @@ export interface Product {
   createdAt: string | number | Date;
   _id: string;
   name: string;
-  price: string;
+  price: number; 
   quantity: number;
   image: string | null;
 }
@@ -33,10 +35,10 @@ export interface NewProduct {
 }
 
 
-export type CartItem = Product & {
+export interface CartItem extends Product {
   quantity: number;
   totalAmount: number;
-};
+}
 
 export type Table = string;
 
@@ -65,3 +67,12 @@ export interface OrderDetailsProps {
 export interface ToastProps {
   message: string;
 }
+
+export interface ModalProps {
+  onClose: MouseEventHandler<HTMLDivElement>;
+  children: ReactNode;
+}
+
+export type SetCartFunction = (cart: CartItem[]) => void;
+
+export type SetProductsFunction = (products: Product[]) => void;
