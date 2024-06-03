@@ -188,7 +188,6 @@ button:focus-visible {
   }
 }
 
-
 .modal {
   position: fixed;
   z-index: 1;
@@ -221,4 +220,15 @@ button:focus-visible {
   color: #fe0039;
   text-decoration: none;
   cursor: pointer;
+}
+
+/* Remove arrows from number input */
+.no-arrows::-webkit-outer-spin-button,
+.no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-arrows {
+  -moz-appearance: textfield;
 }
