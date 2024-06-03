@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import  { useState, useEffect, SetStateAction } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaLock } from "react-icons/fa";
 import { useLockContext } from "../contexts/LockContext";
@@ -12,7 +12,7 @@ function HomePage() {
     const unlockOnCorrectPin = () => {
       if (pin === "3333" && pin.length === 4) {
         unlockApp(); // Unlock the app
-        navigate("/pos"); // Navigate to /pos after unlocking
+        navigate("/tables"); // Navigate to /pos after unlocking
       }
     };
 
@@ -37,7 +37,7 @@ function HomePage() {
     }
   };
 
-  const handlePinChange = (e) => {
+  const handlePinChange = (e: { target: { value: SetStateAction<string>; }; }) => {
     setPin(e.target.value);
   };
 

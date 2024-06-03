@@ -79,6 +79,12 @@ export interface ModalProps {
   children: ReactNode;
 }
 
+export interface LockContextValue {
+  isLocked: boolean;
+  lockApp: () => void;
+  unlockApp: () => void;
+}
+
 export type SetCartFunction = (cart: CartItem[]) => void;
 
 export type SetProductsFunction = (products: Product[]) => void;
