@@ -51,7 +51,7 @@ const AddNewProducts = () => {
       setNewProduct({ ...newProduct, isUploading: true });
       const formData = new FormData();
       formData.append("name", newProduct.name);
-      formData.append("price", newProduct.price);
+      formData.append("price", newProduct.price.toString());
       formData.append("quantity", newProduct.quantity.toString());
       if (newProduct.image) {
         formData.append("image", newProduct.image);
