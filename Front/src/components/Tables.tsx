@@ -87,26 +87,6 @@ const Tables = () => {
     }
   }, [selectedTable]);
 
-  // const reserveTable = async (table: Table) => {
-  //   try {
-  //     // Simulate a delay to mimic async operation
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     // Update local state to mark the table as reserved
-  //     setTableReserved((prev) => [...prev, table]);
-  //     setTableAvailable((prev) => prev.filter((res) => res !== table));
-
-  //     // Update local storage with the selected table ID
-  //     localStorage.setItem("selectedTableId", table);
-
-  //     // Navigate to the POS page
-  //     navigate(`/pos/${table}`);
-  //   } catch (error) {
-  //     console.error("Error reserving table:", error.message);
-  //     // Handle error if needed
-  //   }
-  // };
-
   // Update the reserveTable function to set isReserved to true when reserving a table
   const reserveTable = async (table: Table) => {
     try {
@@ -187,39 +167,6 @@ const Tables = () => {
     }
   };
 
-  // console.log("Selected Table:", selectedTable);
-  // console.log("Orders:", orders);
-
-  // const reserveTableMutation = useMutation({
-  //   mutationFn: (table: Table) => {
-  //     return new Promise<void>((resolve) => {
-  //       setTableReserved((prev) => [...prev, table]);
-  //       setTableAvailable((prev) => prev.filter((res) => res !== table));
-  //       localStorage.setItem("selectedTableId", table);
-  //       navigate(`/pos/${table}`);
-  //       resolve();
-  //     });
-  //   },
-  // });
-
-  // const reserveTableMutation = useMutation({
-  //   mutationFn: async (table: Table) => {
-  //     const orders = await fetchOrders(table.split(" ")[1]);
-  //     if (orders.length > 0) {
-  //       setTableReserved((prev) => [...prev, table]);
-  //       setTableAvailable((prev) => prev.filter((res) => res !== table));
-  //       localStorage.setItem("selectedTableId", table);
-  //       navigate(`/pos/${table}`);
-  //     } else {
-  //       // Display an error message or handle the situation where there are no orders
-  //       console.log("Cannot reserve the table without orders");
-  //     }
-  //   },
-  // });
-
-  // console.log("Selected Table:", selectedTable);
-  // console.log("Orders:", orders);
-
   const closeOrderMutation = useMutation({
     mutationFn: (tableNumber: string) => closeOrder(tableNumber),
     onSuccess: (_data, variables) => {
@@ -236,22 +183,6 @@ const Tables = () => {
       setTimeout(() => setShowToast(false), 3000);
     },
   });
-
-  // console.log("Selected Table:", selectedTable);
-  // console.log("Orders:", orders);
-
-  // const onClickData = async (table: Table) => {
-  //   if (tableAvailable.includes(table)) {
-  //     reserveTableMutation.mutate(table);
-  //   } else {
-  //     setSelectedTable(table);
-  //     // Fetch orders for the selected table here
-  //     await fetchOrders(table.split(" ")[1]);
-  //   }
-  // };
-
-  // console.log("Selected Table:", selectedTable);
-  // console.log("Orders:", orders);
 
   return (
     <div className="flex flex-col items-center">

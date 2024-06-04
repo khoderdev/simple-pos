@@ -79,7 +79,7 @@ function OrderSummaryModal({
       localStorage.setItem("invoiceNumber", nextInvoiceNumber);
       return nextInvoiceNumber;
     });
-  }, [isOpen]); // This effect runs whenever the modal is opened
+  }, [isOpen]);
 
   if (!isOpen || !orderDetails) {
     return null;
@@ -104,7 +104,6 @@ function OrderSummaryModal({
           <div className="flex justify-between items-center mb-5">
             <div className="flex items-center">
               <img src="/logo.png" alt="Site Logo" className="h-10 mr-4" />
-              {/* <h1 className="text-3xl font-bold text-center">Invoice</h1> */}
             </div>
             <span className="text-lg font-semibold">
               Invoice #{invoiceNumber}
@@ -129,9 +128,9 @@ function OrderSummaryModal({
             <span className="font-bold text-center">Price</span>
           </div>
           {itemDetails.map((item, index) => (
-            <div key={index} className="flex justify-between mb-2">
+            <div key={index} className="flex justify-between items-center mb-2">
               <span className="text-center">{item.name}</span>
-              <span className="text-center mr-8">
+              <span className="text-center">
                 {orderDetails.items[index]?.quantity ?? ""}
               </span>
               <span className="text-center">
@@ -139,6 +138,7 @@ function OrderSummaryModal({
               </span>
             </div>
           ))}
+
           <div className="border-b border-gray-400 mb-5"></div>
           <div className="flex justify-between mb-2">
             <span className="font-semibold text-2xl text-center">Total:</span>

@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 });
 
 const localForagePersistor = {
-  persistClient: async (client) => {
+  persistClient: async (client: unknown) => {
     await localforage.setItem("react-query", client);
   },
   restoreClient: async () => {

@@ -17,9 +17,16 @@ export const productsAtom = atomWithStorage<Product[]>("Products", []);
 export const isLoadingAtom = atom(false);
 export const cartAtom = atom<CartItem[]>([]);
 export const totalAmountAtom = atom(0);
-// export const orderSummaryAtom = atom<JSX.Element | null>(null); // Update type here
+
 export const orderSummaryAtom = atom(null);
 export const isModalOpenAtom = atom(false);
+
+export const startingCashAtom = atomWithStorage<number | null>(
+  "startingCash",
+  null
+);
+export const totalSalesAtom = atomWithStorage("totalSales", 0);
+export const initialCash = atomWithStorage("initialCash", 0);
 
 export const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
   "Table 1",
@@ -53,7 +60,10 @@ const store = createStore(
   orderSummaryAtom,
   isModalOpenAtom,
   tableAvailableAtom,
-  tableReservedAtom
+  tableReservedAtom,
+  startingCashAtom,
+  totalSalesAtom,
+  initialCash
 );
 
 export default store;

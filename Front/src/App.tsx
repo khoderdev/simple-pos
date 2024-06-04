@@ -6,6 +6,8 @@ import Sales from "./components/Sales";
 import Tables from "./components/Tables";
 import Inventory from "./components/Inventory";
 import MainLayout from "./layouts/MainLayout";
+import { CashProvider } from "./contexts/CashContext";
+import CashManagement from "./components/CashManagement";
 
 const LockedMessage = () => {
   return (
@@ -26,29 +28,33 @@ function App() {
   const { isLocked }: { isLocked: boolean } = useLockContext();
 
   return (
-    <Router>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          {isLocked ? (
-            <>
-              <Route path="/pos/*" element={<LockedMessage />} />
-              <Route path="/tables" element={<LockedMessage />} />
-              <Route path="/sales" element={<LockedMessage />} />
-              <Route path="/inventory" element={<LockedMessage />} />
-            </>
-          ) : (
-            <>
-              <Route path="/pos" element={<POSPage />} />
-              <Route path="/pos/:tableId" element={<POSPage />} />
-              <Route path="/tables" element={<Tables />} />
-              <Route path="/sales" element={<Sales />} />
-              <Route path="/inventory" element={<Inventory />} />
-            </>
-          )}
-        </Routes>
-      </MainLayout>
-    </Router>
+    <CashProvider>
+      <Router>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            {isLocked ? (
+              <>
+                <Route path="/pos/*" element={<LockedMessage />} />
+                <Route path="/tables" element={<LockedMessage />} />
+                <Route path="/sales" element={<LockedMessage />} />
+                <Route path="/cash" element={<LockedMessage />} />
+                <Route path="/inventory" element={<LockedMessage />} />
+              </>
+            ) : (
+              <>
+                <Route path="/pos" element={<POSPage />} />
+                <Route path="/pos/:tableId" element={<POSPage />} />
+                <Route path="/tables" element={<Tables />} />
+                <Route path="/sales" element={<Sales />} />
+                <Route path="/cash" element={<CashManagement />} />
+                <Route path="/inventory" element={<Inventory />} />
+              </>
+            )}
+          </Routes>
+        </MainLayout>
+      </Router>
+    </CashProvider>
   );
 }
 

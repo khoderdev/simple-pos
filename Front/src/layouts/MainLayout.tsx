@@ -47,6 +47,7 @@ function MainLayout({ children }) {
               {/* <button onClick={() => navigate("/pos")}>Orders</button> */}
               <button onClick={() => navigate("/tables")}>Tables</button>
               <button onClick={() => navigate("/sales")}>Sales</button>
+              <button onClick={() => navigate("/cash")}>Cash</button>
               <button onClick={() => navigate("/inventory")}>Inventory</button>
             </div>
             <div className="lock-icon-container">
