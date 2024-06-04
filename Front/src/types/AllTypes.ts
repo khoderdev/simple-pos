@@ -162,6 +162,7 @@ export interface ToastProps {
 export interface OrderSummaryModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isPrintModal?: boolean; 
   orderDetails: Order | null;
 }
 
