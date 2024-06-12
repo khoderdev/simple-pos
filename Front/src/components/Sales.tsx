@@ -17,7 +17,7 @@ import { Order, Item } from "../types/AllTypes";
 // Modified closeOrder function to return the closed order's ID
 const closeOrder = async (tableNumber: string): Promise<string> => {
   const response = await fetch(
-    `http://localhost:5000/orders/close/${tableNumber}`,
+    `http://localhost:5200/orders/close/${tableNumber}`,
     {
       method: "POST",
     }
@@ -46,13 +46,13 @@ const Sales = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const response = await axios.get<Order[]>("http://localhost:5000/orders");
+      const response = await axios.get<Order[]>("http://localhost:5200/orders");
       const ordersWithProducts: Order[] = await Promise.all(
         response.data.map(async (order) => {
           const itemsWithProducts: Item[] = await Promise.all(
             order.items.map(async (item) => {
               const productResponse = await axios.get(
-                `http://localhost:5000/products/${item.product}`
+                `http://localhost:5200/products/${item.product}`
               );
               const product = productResponse.data;
               return { ...item, name: product.name, price: product.price };

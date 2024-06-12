@@ -8,7 +8,7 @@ const tablesRouter = require('./salesRoutes');
 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5200;
 
 // MongoDB Connection
 mongoose.connect('mongodb+srv://medleb:MedLeb@pharmacyservicecluster0.thwc8ee.mongodb.net/kk_coffe_shop?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });

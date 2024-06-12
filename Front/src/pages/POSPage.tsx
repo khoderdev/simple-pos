@@ -19,7 +19,7 @@ import {
   Order,
 } from "../types/AllTypes";
 
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "http://localhost:5200";
 
 function POSPage() {
   const { tableId } = useParams();
@@ -400,7 +400,7 @@ export default POSPage;
 //   Order,
 // } from "../types/AllTypes";
 
-// export const BASE_URL = "http://localhost:5000";
+// export const BASE_URL = "http://localhost:5200";
 
 // function POSPage() {
 //   const { tableId } = useParams();

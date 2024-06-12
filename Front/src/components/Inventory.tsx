@@ -22,7 +22,7 @@ const AddNewProducts = () => {
   const fetchProducts = async () => {
     try {
       const response = await axios.get<Product[]>(
-        "http://localhost:5000/products"
+        "http://localhost:5200/products"
       );
       const sortedProducts = response.data.sort(
         (a, b) =>
@@ -58,7 +58,7 @@ const AddNewProducts = () => {
       }
 
       const response = await axios.post<Product>(
-        "http://localhost:5000/products/new",
+        "http://localhost:5200/products/new",
         formData,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -82,7 +82,7 @@ const AddNewProducts = () => {
 
   const deleteProduct = async (productId: string) => {
     try {
-      await axios.delete(`http://localhost:5000/products/${productId}`);
+      await axios.delete(`http://localhost:5200/products/${productId}`);
       const updatedProducts = products.filter(
         (product) => product._id !== productId
       );
@@ -131,7 +131,7 @@ const AddNewProducts = () => {
         formData.append("image", updatedFields.image);
       }
 
-      await axios.put(`http://localhost:5000/products/${productId}`, formData, {
+      await axios.put(`http://localhost:5200/products/${productId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       fetchProducts();
@@ -287,7 +287,7 @@ const AddNewProducts = () => {
             <div key={product._id}>
               <div className="border border-gray-500 rounded-lg overflow-hidden p-2">
                 <img
-                  src={`http://localhost:5000/${product.image}`}
+                  src={`http://localhost:5200/${product.image}`}
                   alt={product.name}
                   className="w-full h-64 object-contain"
                 />

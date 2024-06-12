@@ -17,7 +17,7 @@ import { tableAvailableAtom, tableReservedAtom } from "../States/store";
 const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
   try {
     const response = await fetch(
-      `http://localhost:5000/orders/table/${tableNumber}`
+      `http://localhost:5200/orders/table/${tableNumber}`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch orders");
@@ -36,7 +36,7 @@ const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
 
 const closeOrder = async (tableNumber: string): Promise<void> => {
   const response = await fetch(
-    `http://localhost:5000/orders/close/${tableNumber}`,
+    `http://localhost:5200/orders/close/${tableNumber}`,
     {
       method: "POST",
     }
@@ -66,7 +66,7 @@ const Tables = () => {
   const fetchLatestOrder = async (tableNumber: string) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/orders/table/${tableNumber}`
+        `http://localhost:5200/orders/table/${tableNumber}`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
@@ -117,7 +117,7 @@ const Tables = () => {
     isReserved: boolean
   ) => {
     try {
-      const response = await fetch(`http://localhost:5000/tables/reserved`, {
+      const response = await fetch(`http://localhost:5200/tables/reserved`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ const Tables = () => {
   const closeOrder = async (tableNumber: string): Promise<void> => {
     try {
       const response = await fetch(
-        `http://localhost:5000/orders/close/${tableNumber}`,
+        `http://localhost:5200/orders/close/${tableNumber}`,
         {
           method: "POST",
         }
@@ -244,7 +244,7 @@ const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
   const fetchProductNames = async () => {
     const productNamesMap: ProductNameMap = {};
     try {
-      const response = await fetch(`http://localhost:5000/products`);
+      const response = await fetch(`http://localhost:5200/products`);
       if (!response.ok) {
         throw new Error("Failed to fetch product names");
       }
