@@ -1,7 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
+import { format, parseISO, isValid } from "date-fns";
 import {
   ordersAtom,
   isLoadingAtom,
@@ -12,9 +12,8 @@ import {
   selectedOrderAtom,
   orderStatusAtom,
 } from "../States/store";
-import { Order, Item } from "../types/AllTypes";
+import { Order, Item, Product } from "../types/AllTypes";
 
-// Modified closeOrder function to return the closed order's ID
 const closeOrder = async (tableNumber: string): Promise<string> => {
   const response = await fetch(
     `http://localhost:5200/orders/close/${tableNumber}`,
@@ -26,7 +25,7 @@ const closeOrder = async (tableNumber: string): Promise<string> => {
     throw new Error("Failed to close the order");
   }
   const result = await response.json();
-  return result._id; // Assuming the response contains the closed order's ID
+  return result._id;
 };
 
 const Sales = () => {
@@ -49,18 +48,44 @@ const Sales = () => {
       const response = await axios.get<Order[]>("http://localhost:5200/orders");
       const ordersWithProducts: Order[] = await Promise.all(
         response.data.map(async (order) => {
+          // Log the raw createdAt value to identify issues
+          // console.log("Raw createdAt:", order.createdAt);
+
+          // Handle cases where createdAt is missing or invalid
+          if (!order.createdAt) {
+            throw new Error(
+              `Missing createdAt value for order ID: ${order._id}`
+            );
+          }
+
+          // Parse and validate createdAt date
+          const parsedCreatedAt = parseISO(order.createdAt);
+          if (!isValid(parsedCreatedAt)) {
+            throw new Error(
+              `Invalid createdAt value for order ID: ${order._id}`
+            );
+          }
+
+          // Fetch items with products for each order
           const itemsWithProducts: Item[] = await Promise.all(
             order.items.map(async (item) => {
-              const productResponse = await axios.get(
+              const productResponse = await axios.get<Product>(
                 `http://localhost:5200/products/${item.product}`
               );
               const product = productResponse.data;
               return { ...item, name: product.name, price: product.price };
             })
           );
-          return { ...order, items: itemsWithProducts };
+
+          return {
+            ...order,
+            items: itemsWithProducts,
+            createdAt: parsedCreatedAt,
+          };
         })
       );
+
+      // Update state with orders including parsed createdAt values
       setOrders(ordersWithProducts);
 
       // Initialize the order status atom with the current orders
@@ -71,6 +96,8 @@ const Sales = () => {
       setOrderStatus(initialOrderStatus);
     } catch (error) {
       console.error("Error fetching orders:", error);
+
+      // Handle loading state if needed
     } finally {
       setLoading(false);
     }
@@ -84,7 +111,12 @@ const Sales = () => {
 
     const start = new Date(startDate);
     const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999); // Set end time to the end of the day
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      alert("Please select a valid date range.");
+      return;
+    }
+
+    end.setHours(23, 59, 59, 999);
 
     const filteredOrders = orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
@@ -100,9 +132,8 @@ const Sales = () => {
     const newReport = (
       <div className="report p-4 text-white rounded-md">
         <h1 className="text-2xl !text-center font-bold mb-4">
-          End of the day <br /> Report from (
-          {new Date(start).toLocaleDateString()} to{" "}
-          {new Date(end).toLocaleDateString()})
+          End of the day <br /> Report from ({start.toLocaleDateString()} to{" "}
+          {end.toLocaleDateString()})
         </h1>
         <h3 className="mt-10 mb-2 text-red font-semibold text-xl">
           Total Sales:{" "}
@@ -117,8 +148,8 @@ const Sales = () => {
       </div>
     );
 
-    setReport(newReport); // Store the generated report in the state
-    setIsModalOpen(true); // Show the modal
+    setReport(newReport);
+    setIsModalOpen(true);
   };
 
   const handleRowClick = (order: Order) => {
@@ -128,16 +159,15 @@ const Sales = () => {
   };
 
   const closeModal = () => {
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
   };
 
   const handleCloseOrder = async (tableNumber: string) => {
     try {
       const closedOrderId = await closeOrder(tableNumber);
-      // Update the order status in the atom
       setOrderStatus((prevStatus) => ({
         ...prevStatus,
-        [closedOrderId]: "closed",
+        [closedOrderId]: "Paid",
       }));
     } catch (error) {
       console.error("Error closing order:", error);
@@ -169,7 +199,6 @@ const Sales = () => {
           Generate Report
         </button>
       </div>
-      {/* Orders */}
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -178,15 +207,12 @@ const Sales = () => {
             <p className="text-red text-xl text-center">No Orders found</p>
           ) : (
             <>
-              {/* Header titles */}
               <div className="grid grid-cols-4 text-blue-500 border-b border-gray-700 pb-3 mb-3">
                 <div className="text-lg font-bold">Order #</div>
                 <div className="text-lg font-bold">Total</div>
                 <div className="text-lg font-bold">Date</div>
                 <div className="text-lg font-bold">Status</div>
               </div>
-
-              {/* Order rows */}
               {orders.map((order, index) => (
                 <div
                   key={order._id}
@@ -210,14 +236,15 @@ const Sales = () => {
                         {order.totalAmount.toLocaleString()} L.L
                       </div>
                       <div className="text-lg">
-                        {new Date(order.createdAt).toLocaleString()}
+                        {order.createdAt
+                          ? format(order.createdAt, "yyyy-MM-dd HH:mm:ss")
+                          : "Invalid Date"}
                       </div>
                       <div className="text-lg text-red text-left">
                         {order.status}
                       </div>
                     </div>
                   </div>
-
                   {selectedOrder && selectedOrder._id === order._id && (
                     <div className="order-details mt-4 bg-black-bg p-4 rounded-md">
                       <p className="font-bold text-xl text-green-500 mb-1">
@@ -226,7 +253,12 @@ const Sales = () => {
                       </p>
                       <p className="text-gray-400 mb-4">
                         Created at:{" "}
-                        {new Date(selectedOrder.createdAt).toLocaleString()}
+                        {selectedOrder.createdAt
+                          ? format(
+                              selectedOrder.createdAt,
+                              "yyyy-MM-dd HH:mm:ss"
+                            )
+                          : "Invalid Date"}
                       </p>
                       <h3 className="font-bold text-xl my-2">Items:</h3>
                       <ul>
@@ -272,8 +304,6 @@ const Sales = () => {
           )}
         </div>
       )}
-
-      {/* End of the Day Report Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
           <div className="bg-[#070f1b] p-6 rounded-lg shadow-lg w-full max-w-xl min-h-72 mx-4 relative">
@@ -305,3 +335,4 @@ const Sales = () => {
 };
 
 export default Sales;
+

@@ -22,6 +22,7 @@
     "auto-prefixer": "^0.4.2",
     "axios": "^0.27.2",
     "axios-cache-adapter": "^2.7.3",
+    "date-fns": "^3.6.0",
     "jotai": "^2.8.0",
     "localforage": "^1.10.0",
     "react": "^18.2.0",

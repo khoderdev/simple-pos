@@ -5,11 +5,13 @@ const tableSchema = new mongoose.Schema({
   tableId: {
     type: String,
     required: true,
-    unique: true, // Ensure tableId is unique
+    unique: true, 
   },
+
   isReserved: {
-    type: Boolean,
-    default: false,
+    type: String,
+    enum: ["Available", "Booked"],
+    default: "Available",
   },
   status: {
     type: String,
