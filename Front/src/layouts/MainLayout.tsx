@@ -33,8 +33,7 @@ function MainLayout({ children }) {
     <div>
       <header
         className={`bg-[#0a1627] fixed w-full transition-transform ${
-          visible ? "transform translate-y-0" : 
-          ""
+          visible ? "transform translate-y-0" : ""
           // "transform -translate-y-full"
         } z-10`}
       >
@@ -47,8 +46,9 @@ function MainLayout({ children }) {
               {/* <button onClick={() => navigate("/pos")}>Orders</button> */}
               <button onClick={() => navigate("/tables")}>Tables</button>
               <button onClick={() => navigate("/sales")}>Sales</button>
-              <button onClick={() => navigate("/cash")}>Cash</button>
-              <button onClick={() => navigate("/inventory")}>Inventory</button>
+              {/* <button onClick={() => navigate("/cash")}>Cash</button> */}
+              <button onClick={() => navigate("/inventory")}>Items</button>
+              <button onClick={() => navigate("/stock")}>Stock</button>
             </div>
             <div className="lock-icon-container">
               {!isLocked && (
@@ -61,7 +61,7 @@ function MainLayout({ children }) {
           </div>
         </nav>
       </header>
-      <main className="p-2 pt-[5.3rem]">{children}</main>
+      <main className="pt-20">{children}</main>
     </div>
   );
 }

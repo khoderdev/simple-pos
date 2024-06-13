@@ -8,6 +8,7 @@ import Inventory from "./components/Inventory";
 import MainLayout from "./layouts/MainLayout";
 import { CashProvider } from "./contexts/CashContext";
 import CashManagement from "./components/CashManagement";
+import Stock from "./components/Stock";
 
 const LockedMessage = () => {
   return (
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/sales" element={<LockedMessage />} />
                 <Route path="/cash" element={<LockedMessage />} />
                 <Route path="/inventory" element={<LockedMessage />} />
+                <Route path="/stock" element={<LockedMessage />} />
               </>
             ) : (
               <>
@@ -49,6 +51,7 @@ function App() {
                 <Route path="/sales" element={<Sales />} />
                 <Route path="/cash" element={<CashManagement />} />
                 <Route path="/inventory" element={<Inventory />} />
+                <Route path="/stock" element={<Stock />} />
               </>
             )}
           </Routes>
