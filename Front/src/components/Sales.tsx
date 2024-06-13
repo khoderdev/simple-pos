@@ -48,9 +48,6 @@ const Sales = () => {
       const response = await axios.get<Order[]>("http://localhost:5200/orders");
       const ordersWithProducts: Order[] = await Promise.all(
         response.data.map(async (order) => {
-          // Log the raw createdAt value to identify issues
-          // console.log("Raw createdAt:", order.createdAt);
-
           // Handle cases where createdAt is missing or invalid
           if (!order.createdAt) {
             throw new Error(
@@ -90,7 +87,7 @@ const Sales = () => {
 
       // Initialize the order status atom with the current orders
       const initialOrderStatus = ordersWithProducts.reduce((acc, order) => {
-        acc[order._id] = order.status;
+        acc[order._id] = order.table.status;
         return acc;
       }, {} as { [key: string]: string });
       setOrderStatus(initialOrderStatus);
@@ -174,6 +171,18 @@ const Sales = () => {
     }
   };
 
+  // const handleCloseOrder = async (tableNumber: string) => {
+  //   try {
+  //     const closedOrderId = await closeOrder(tableNumber);
+  //     setOrderStatus((prevStatus) => ({
+  //       ...prevStatus,
+  //       [closedOrderId]: "Paid",
+  //     }));
+  //   } catch (error) {
+  //     console.error("Error closing order:", error);
+  //   }
+  // };
+
   return (
     <div className="sales-container flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-6 text-center">Sales Dashboard</h1>
@@ -240,9 +249,19 @@ const Sales = () => {
                           ? format(order.createdAt, "yyyy-MM-dd HH:mm:ss")
                           : "Invalid Date"}
                       </div>
-                      <div className="text-lg text-red text-left">
-                        {order.status}
+                      <div
+                        className={`text-lg ${
+                          order.table.status === "open"
+                            ? "text-green-500"
+                            : "text-red-500"
+                        } text-left`}
+                      >
+                        {order.table.status}
                       </div>
+
+                      {/* <div className="text-lg text-red text-left">
+                        {order.status}
+                      </div> */}
                     </div>
                   </div>
                   {selectedOrder && selectedOrder._id === order._id && (
@@ -286,7 +305,7 @@ const Sales = () => {
                           </li>
                         ))}
                       </ul>
-                      {order.status === "open" && (
+                      {order.table.status === "open" && (
                         <button
                           onClick={() =>
                             handleCloseOrder(order.tableId.split(" ")[1])
@@ -335,4 +354,3 @@ const Sales = () => {
 };
 
 export default Sales;
-

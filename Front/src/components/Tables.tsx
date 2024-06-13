@@ -28,7 +28,7 @@ const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
     const latestOrder = orders.length > 0 ? [orders[orders.length - 1]] : [];
     console.log("Fetched orders for table", tableNumber, ":", latestOrder);
     return latestOrder;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching orders:", error.message);
     return [];
   }
@@ -75,7 +75,7 @@ const Tables = () => {
       // Return only the most recent order for the table
       const latestOrder = orders.length > 0 ? orders[orders.length - 1] : null;
       setLatestOrder(latestOrder);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching orders:", error.message);
       setLatestOrder(null);
     }
@@ -105,7 +105,7 @@ const Tables = () => {
 
       // Navigate to the POS page
       navigate(`/pos/${table}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error reserving table:", error.message);
       // Handle error if needed
     }
@@ -127,7 +127,7 @@ const Tables = () => {
       if (!response.ok) {
         throw new Error("Failed to update table reservation status");
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `Error updating table reservation status: ${error.message}`
       );
@@ -151,7 +151,7 @@ const Tables = () => {
       await updateTableReservationStatus(tableNumber, false);
 
       await response.json();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error closing order:", error.message);
       // Handle error if needed
     }
@@ -255,7 +255,7 @@ const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
         }
       );
       setProductNames(productNamesMap);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching product names:", error.message);
     }
   };
@@ -272,7 +272,8 @@ const OrderDetails = ({ table, orders, closeOrder }: OrderDetailsProps) => {
           <div key={index} className="mb-4">
             <div className="flex flex-col items-center justify-between mb-2">
               <p className="text-lg font-semibold">
-                Status: <span className="text-green-500"> {order.status}</span>
+                Status:{" "}
+                <span className="text-green-500">{order.table.status}</span>
               </p>
               <p className="text-lg font-semibold text-gray-200">
                 Total Amount:{" "}
