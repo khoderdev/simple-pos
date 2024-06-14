@@ -34,18 +34,6 @@ const fetchOrders = async (tableNumber: string): Promise<Order[]> => {
   }
 };
 
-const closeOrder = async (tableNumber: string): Promise<void> => {
-  const response = await fetch(
-    `http://localhost:5200/orders/close/${tableNumber}`,
-    {
-      method: "POST",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Failed to close the order");
-  }
-  await response.json();
-};
 
 const Tables = () => {
   const [tableAvailable, setTableAvailable] = useAtom(tableAvailableAtom);
@@ -114,7 +102,7 @@ const Tables = () => {
   // Function to update the reservation status of a table in the backend
   const updateTableReservationStatus = async (
     tableId: string,
-    isReserved: boolean
+    isReserved: string
   ) => {
     try {
       const response = await fetch(`http://localhost:5200/tables/reserved`, {

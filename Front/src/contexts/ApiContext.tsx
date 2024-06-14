@@ -5,16 +5,14 @@ import axios from "axios";
 import { parseISO, isValid } from "date-fns";
 import { ApiContextType, Order, Item, Product } from "../types/AllTypes";
 import { useAtom } from "jotai";
-import {
-salesAtom
-  } from "../States/store";
+import { salesAtom } from "../States/store";
 // Create the context
 export const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
 // Define a component that will provide the context to the entire app
 export const ApiProvider: React.FC = ({ children }) => {
   const [orders, setOrders] = useAtom<Order[]>(salesAtom);
-//   const [orders, setOrders] = useState<Order[]>([]);
+  //   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -82,18 +80,49 @@ export const ApiProvider: React.FC = ({ children }) => {
     }
   };
 
+  // Function to update the reservation status of a table in the backend
+  const updateTableReservationStatus = async (
+    tableId: string,
+    isReserved: string
+  ) => {
+    try {
+      const response = await fetch(`http://localhost:5200/tables/reserved`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tableId, isReserved }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update table reservation status");
+      }
+    } catch (error: any) {
+      throw new Error(
+        `Error updating table reservation status: ${error.message}`
+      );
+    }
+  };
+
+  // Update the closeOrder function to set isReserved to false when closing an order
   const closeOrder = async (tableNumber: string): Promise<void> => {
     try {
-      const response = await axios.post(
-        `http://localhost:5200/orders/close/${tableNumber}`
+      const response = await fetch(
+        `http://localhost:5200/orders/close/${tableNumber}`,
+        {
+          method: "POST",
+        }
       );
       if (!response.ok) {
         throw new Error("Failed to close the order");
       }
 
-      fetchOrders();
-    } catch (error) {
-      console.error("Error closing order:", error);
+      // Update the reservation status of the table in the backend
+      await updateTableReservationStatus(tableNumber, false);
+
+      await response.json();
+    } catch (error: any) {
+      console.error("Error closing order:", error.message);
+      // Handle error if needed
     }
   };
 

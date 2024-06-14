@@ -222,7 +222,7 @@ const Sales = () => {
                       {order.table && order.table.status === "open" && (
                         <button
                           onClick={() =>
-                            handleCloseOrder(order.tableId.split(" ")[1])
+                            handleCloseOrder(order.table.tableId.split(" ")[1])
                           }
                           className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 mt-4"
                         >
