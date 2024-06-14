@@ -38,9 +38,92 @@ const Sales = () => {
   const [selectedOrder, setSelectedOrder] = useAtom(selectedOrderAtom);
   const [, setOrderStatus] = useAtom(orderStatusAtom);
 
+  // useEffect(() => {
+  //   fetchOrders();
+  // }, []);
+
+  // const fetchOrders = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const response = await axios.get<Order[]>("http://localhost:5200/orders");
+  //     const ordersWithProducts: Order[] = await Promise.all(
+  //       response.data.map(async (order) => {
+  //         // Handle cases where createdAt is missing or invalid
+  //         if (!order.createdAt) {
+  //           console.error(`Missing createdAt value for order ID: ${order._id}`);
+  //           throw new Error(
+  //             `Missing createdAt value for order ID: ${order._id}`
+  //           );
+  //         }
+
+  //         // Parse and validate createdAt date
+  //         const parsedCreatedAt = parseISO(order.createdAt);
+  //         if (!isValid(parsedCreatedAt)) {
+  //           console.error(`Invalid createdAt value for order ID: ${order._id}`);
+  //           throw new Error(
+  //             `Invalid createdAt value for order ID: ${order._id}`
+  //           );
+  //         }
+
+  //         // Fetch items with products for each order
+  //         const itemsWithProducts: Item[] = await Promise.all(
+  //           order.items.map(async (item) => {
+  //             try {
+  //               const productResponse = await axios.get<Product>(
+  //                 `http://localhost:5200/products/${item.product}`
+  //               );
+  //               const product = productResponse.data;
+  //               return { ...item, name: product.name, price: product.price };
+  //             } catch (error) {
+  //               console.error(
+  //                 `Error fetching product for item ID: ${item._id}`,
+  //                 error
+  //               );
+  //               // Handle or log the error as needed
+  //               return { ...item, name: "Product Not Found", price: 0 }; // Example fallback
+  //             }
+  //           })
+  //         );
+
+  //         return {
+  //           ...order,
+  //           items: itemsWithProducts,
+  //           createdAt: parsedCreatedAt,
+  //         };
+  //       })
+  //     );
+
+  //     // Log orders with products before setting state
+  //     // console.log("Orders with products:", ordersWithProducts);
+
+  //     // Update state with orders including parsed createdAt values
+  //     setOrders(ordersWithProducts);
+
+  //     // Initialize the order status atom with the current orders
+  //     const initialOrderStatus = ordersWithProducts.reduce((acc, order) => {
+  //       if (order.table && order.table.status) {
+  //         acc[order._id] = order.table.status;
+  //       } else {
+  //         // console.error(
+  //         //   `Undefined or missing table status for order ID: ${order._id}`
+  //         // );
+  //         acc[order._id] = "Unknown";
+  //       }
+  //       return acc;
+  //     }, {} as { [key: string]: string });
+  //     setOrderStatus(initialOrderStatus);
+  //   } catch (error) {
+  //     console.error("Error fetching orders:", error);
+  //     // Handle loading state if needed
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   useEffect(() => {
+    // Immediately fetch orders when component mounts
     fetchOrders();
-  }, []);
+  }, []); // Empty dependency array ensures this runs once on mount
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -50,6 +133,7 @@ const Sales = () => {
         response.data.map(async (order) => {
           // Handle cases where createdAt is missing or invalid
           if (!order.createdAt) {
+            console.error(`Missing createdAt value for order ID: ${order._id}`);
             throw new Error(
               `Missing createdAt value for order ID: ${order._id}`
             );
@@ -58,6 +142,7 @@ const Sales = () => {
           // Parse and validate createdAt date
           const parsedCreatedAt = parseISO(order.createdAt);
           if (!isValid(parsedCreatedAt)) {
+            console.error(`Invalid createdAt value for order ID: ${order._id}`);
             throw new Error(
               `Invalid createdAt value for order ID: ${order._id}`
             );
@@ -66,11 +151,20 @@ const Sales = () => {
           // Fetch items with products for each order
           const itemsWithProducts: Item[] = await Promise.all(
             order.items.map(async (item) => {
-              const productResponse = await axios.get<Product>(
-                `http://localhost:5200/products/${item.product}`
-              );
-              const product = productResponse.data;
-              return { ...item, name: product.name, price: product.price };
+              try {
+                const productResponse = await axios.get<Product>(
+                  `http://localhost:5200/products/${item.product}`
+                );
+                const product = productResponse.data;
+                return { ...item, name: product.name, price: product.price };
+              } catch (error) {
+                console.error(
+                  `Error fetching product for item ID: ${item._id}`,
+                  error
+                );
+                // Handle or log the error as needed
+                return { ...item, name: "Product Not Found", price: 0 }; // Example fallback
+              }
             })
           );
 
@@ -87,13 +181,16 @@ const Sales = () => {
 
       // Initialize the order status atom with the current orders
       const initialOrderStatus = ordersWithProducts.reduce((acc, order) => {
-        acc[order._id] = order.table.status;
+        if (order.table && order.table.status) {
+          acc[order._id] = order.table.status;
+        } else {
+          acc[order._id] = "Unknown";
+        }
         return acc;
       }, {} as { [key: string]: string });
       setOrderStatus(initialOrderStatus);
     } catch (error) {
       console.error("Error fetching orders:", error);
-
       // Handle loading state if needed
     } finally {
       setLoading(false);
@@ -171,18 +268,6 @@ const Sales = () => {
     }
   };
 
-  // const handleCloseOrder = async (tableNumber: string) => {
-  //   try {
-  //     const closedOrderId = await closeOrder(tableNumber);
-  //     setOrderStatus((prevStatus) => ({
-  //       ...prevStatus,
-  //       [closedOrderId]: "Paid",
-  //     }));
-  //   } catch (error) {
-  //     console.error("Error closing order:", error);
-  //   }
-  // };
-
   return (
     <div className="sales-container flex flex-col items-center">
       <h1 className="text-3xl font-bold mb-6 text-center">Sales Dashboard</h1>
@@ -249,7 +334,7 @@ const Sales = () => {
                           ? format(order.createdAt, "yyyy-MM-dd HH:mm:ss")
                           : "Invalid Date"}
                       </div>
-                      <div
+                      {/* <div
                         className={`text-lg ${
                           order.table.status === "open"
                             ? "text-green-500"
@@ -257,11 +342,22 @@ const Sales = () => {
                         } text-left`}
                       >
                         {order.table.status}
-                      </div>
-
-                      {/* <div className="text-lg text-red text-left">
-                        {order.status}
                       </div> */}
+                      {order.table ? (
+                        <div
+                          className={`text-lg ${
+                            order.table.status === "open"
+                              ? "text-green-500"
+                              : "text-red-500"
+                          } text-left`}
+                        >
+                          {order.table.status || "Undefined"}
+                        </div>
+                      ) : (
+                        <div className="text-lg text-gray-500 text-left">
+                          Undefined
+                        </div>
+                      )}
                     </div>
                   </div>
                   {selectedOrder && selectedOrder._id === order._id && (
@@ -305,7 +401,7 @@ const Sales = () => {
                           </li>
                         ))}
                       </ul>
-                      {order.table.status === "open" && (
+                      {order.table && order.table.status === "open" && (
                         <button
                           onClick={() =>
                             handleCloseOrder(order.tableId.split(" ")[1])

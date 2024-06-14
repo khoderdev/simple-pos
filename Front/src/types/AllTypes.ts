@@ -11,6 +11,7 @@ export interface Order {
   tableId: string;
   _id: string;
   items: Item[];
+
   table: {
     isReserved: string;
     status: string;
@@ -18,7 +19,7 @@ export interface Order {
     _id: string;
   };
   totalAmount: number;
-  createdAt: string;
+  createdAt: date;
 }
 
 export interface Product {

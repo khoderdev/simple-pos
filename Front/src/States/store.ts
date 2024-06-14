@@ -18,7 +18,7 @@ export const isLoadingAtom = atom(false);
 export const cartAtom = atom<CartItem[]>([]);
 export const totalAmountAtom = atom(0);
 
-export const orderSummaryAtom = atom(null);
+export const orderSummaryAtom = atom<JSX.Element | null>(null);
 export const isModalOpenAtom = atom(false);
 
 export const startingCashAtom = atomWithStorage<number | null>(
