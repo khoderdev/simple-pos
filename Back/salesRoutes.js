@@ -202,20 +202,29 @@ tablesRouter.get("/available", async (req, res) => {
 
 // Update reserved tables
 router.put("/tables/reserved", async (req, res) => {
+  const { tableId, isReserved } = req.body;
   try {
-    const { tableId } = req.body;
-    // Update the reserved tables in the database
-    await ReservedTables.findOneAndUpdate(
-      { tableId },
-      { $set: { isReserved: true } },
-      { upsert: true }
-    );
-    res.json({ message: "Reserved tables updated successfully" });
+    await Table.findOneAndUpdate({ tableId }, { isReserved });
+    res.status(200).send("Table reservation status updated");
   } catch (error) {
-    console.error("Error updating reserved tables:", error.message);
-    res.status(500).json({ message: error.message });
+    res.status(500).send("Failed to update table reservation status");
   }
 });
+// router.put("/tables/reserved", async (req, res) => {
+//   try {
+//     const { tableId } = req.body;
+//     // Update the reserved tables in the database
+//     await ReservedTables.findOneAndUpdate(
+//       { tableId },
+//       { $set: { isReserved: true } },
+//       { upsert: true }
+//     );
+//     res.json({ message: "Reserved tables updated successfully" });
+//   } catch (error) {
+//     console.error("Error updating reserved tables:", error.message);
+//     res.status(500).json({ message: error.message });
+//   }
+// });
 
 // Mount the tables router under the /tables path
 router.use("/tables", tablesRouter);

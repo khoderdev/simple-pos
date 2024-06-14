@@ -1,37 +1,5 @@
+import { UseMutationResult } from "@tanstack/react-query";
 import { MouseEventHandler, ReactNode } from "react";
-
-// export interface Item {
-//   _id: unknown;
-//   totalAmount: number;
-//   product: string;
-//   name: string;
-//   price: number;
-//   quantity: number;
-// }
-
-// export interface Order {
-//   tableId: string;
-//   _id: string;
-//   items: Item[];
-
-//   table: {
-//     isReserved: string;
-//     status: string;
-//     tableId: string;
-//     _id: string;
-//   };
-//   totalAmount: number;
-//   createdAt: string;
-// }
-
-// export interface Product {
-//   createdAt: Date | string | number;
-//   _id: string;
-//   name: string;
-//   price: number;
-//   quantity: number;
-//   image: string | null;
-// }
 
 export interface Item {
   _id: unknown;
@@ -142,10 +110,17 @@ export interface DailyReport {
   totalSales: number;
 }
 
-// Define the shape of your API context
 export interface ApiContextType {
   orders: Order[];
   loading: boolean;
-  fetchOrders: () => void;
+  fetchOrders: (tableNumber?: string) => Promise<void>;
   closeOrder: (tableNumber: string) => Promise<void>;
+  reserveTable: (table: Table) => Promise<void>;
+  fetchLatestOrder: (tableNumber: string) => Promise<void>;
+  updateTableReservationStatus: (
+    tableId: string,
+    isReserved: boolean
+  ) => Promise<void>;
+  onClickData: (table: Table) => Promise<void>;
+  closeOrderMutation: UseMutationResult<void, Error, string, unknown>;
 }

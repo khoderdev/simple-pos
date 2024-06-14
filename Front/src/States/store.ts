@@ -4,7 +4,7 @@ import { CartItem, Order, Product, Table } from "../types/AllTypes";
 
 // export const ordersAtom = atomWithStorage<Order[]>("Order",[]);
 export const ordersAtom = atom<Order[]>([]);
-export const salesAtom = atomWithStorage<Order[]>("Sales",[]);
+export const salesAtom = atomWithStorage<Order[]>("Sales", []);
 export const orderStatusAtom = atom<{ [key: string]: string }>({});
 export const persistedIsLoggedInAtom = atomWithStorage("isLoggedIn", false);
 export const isLoggedInAtom = atom(false);
@@ -14,7 +14,7 @@ export const userRolesAtom = atomWithStorage("userRoles", ["Admin", "User"]);
 export const startDateAtom = atom<string>("");
 export const endDateAtom = atom<string>("");
 export const selectedOrderAtom = atom<Order | null>(null);
-export const productsAtom = atomWithStorage<Product[]>("Products", []);
+export const productsAtom = atom<Product[]>([]);
 export const isLoadingAtom = atom(false);
 export const cartAtom = atom<CartItem[]>([]);
 export const totalAmountAtom = atom(0);
@@ -29,7 +29,7 @@ export const startingCashAtom = atomWithStorage<number | null>(
 export const totalSalesAtom = atomWithStorage("totalSales", 0);
 export const initialCash = atomWithStorage("initialCash", 0);
 
-export const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
+export const tableAvailableAtom = atomWithStorage<Table[]>("availableTables", [
   "Table 1",
   "Table 2",
   "Table 3",
@@ -41,7 +41,7 @@ export const tableAvailableAtom = atomWithStorage<Table[]>("tableAvailable", [
   "Table 9",
 ]);
 
-export const tableReservedAtom = atomWithStorage<Table[]>("tableReserved", []);
+export const tableReservedAtom = atomWithStorage<Table[]>("bookedTables", []);
 
 const store = createStore(
   ordersAtom,
