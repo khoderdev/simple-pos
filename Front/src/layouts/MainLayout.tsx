@@ -37,9 +37,9 @@ function MainLayout({ children }) {
           // "transform -translate-y-full"
         } z-10`}
       >
-        <nav className="container mx-auto px-4 py-1 flex justify-between items-center">
+        <nav className="container mx-auto px-4 py-0 flex justify-between items-center">
           <Link to="/">
-            <img src="logo.png" className="w-48 sm:w-72 p-1" alt="Logo" />
+            <img src="rooster2.png" className="w-48 sm:w-32 p-1" alt="Logo" />
           </Link>
           <div className="flex items-center">
             <div className="hidden sm:flex gap-3 items-center">
@@ -48,7 +48,7 @@ function MainLayout({ children }) {
               <button onClick={() => navigate("/sales")}>Sales</button>
               {/* <button onClick={() => navigate("/cash")}>Cash</button> */}
               <button onClick={() => navigate("/inventory")}>Items</button>
-              <button onClick={() => navigate("/stock")}>Stock</button>
+              {/* <button onClick={() => navigate("/stock")}>Stock</button> */}
             </div>
             <div className="lock-icon-container">
               {!isLocked && (
@@ -61,7 +61,7 @@ function MainLayout({ children }) {
           </div>
         </nav>
       </header>
-      <main className="pt-20">{children}</main>
+      <main className="pt-24">{children}</main>
     </div>
   );
 }
