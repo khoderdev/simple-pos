@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import POSPage from "./pages/POSPage";
 import { useLockContext } from "./contexts/LockContext";
+import { ApiProvider } from "./contexts/ApiContext";
 import Sales from "./components/Sales";
 import Tables from "./components/Tables";
 import Inventory from "./components/Inventory";
@@ -29,35 +30,37 @@ function App() {
   const { isLocked }: { isLocked: boolean } = useLockContext();
 
   return (
-    <CashProvider>
-      <Router>
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            {isLocked ? (
-              <>
-                <Route path="/pos/*" element={<LockedMessage />} />
-                <Route path="/tables" element={<LockedMessage />} />
-                <Route path="/sales" element={<LockedMessage />} />
-                <Route path="/cash" element={<LockedMessage />} />
-                <Route path="/inventory" element={<LockedMessage />} />
-                <Route path="/stock" element={<LockedMessage />} />
-              </>
-            ) : (
-              <>
-                <Route path="/pos" element={<POSPage />} />
-                <Route path="/pos/:tableId" element={<POSPage />} />
-                <Route path="/tables" element={<Tables />} />
-                <Route path="/sales" element={<Sales />} />
-                <Route path="/cash" element={<CashManagement />} />
-                <Route path="/inventory" element={<Inventory />} />
-                <Route path="/stock" element={<Stock />} />
-              </>
-            )}
-          </Routes>
-        </MainLayout>
-      </Router>
-    </CashProvider>
+    <ApiProvider>
+      <CashProvider>
+        <Router>
+          <MainLayout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              {isLocked ? (
+                <>
+                  <Route path="/pos/*" element={<LockedMessage />} />
+                  <Route path="/tables" element={<LockedMessage />} />
+                  <Route path="/sales" element={<LockedMessage />} />
+                  <Route path="/cash" element={<LockedMessage />} />
+                  <Route path="/inventory" element={<LockedMessage />} />
+                  <Route path="/stock" element={<LockedMessage />} />
+                </>
+              ) : (
+                <>
+                  <Route path="/pos" element={<POSPage />} />
+                  <Route path="/pos/:tableId" element={<POSPage />} />
+                  <Route path="/tables" element={<Tables />} />
+                  <Route path="/sales" element={<Sales />} />
+                  <Route path="/cash" element={<CashManagement />} />
+                  <Route path="/inventory" element={<Inventory />} />
+                  <Route path="/stock" element={<Stock />} />
+                </>
+              )}
+            </Routes>
+          </MainLayout>
+        </Router>
+      </CashProvider>
+    </ApiProvider>
   );
 }
 

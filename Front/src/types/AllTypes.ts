@@ -1,5 +1,40 @@
 import { MouseEventHandler, ReactNode } from "react";
+
+// export interface Item {
+//   _id: unknown;
+//   totalAmount: number;
+//   product: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
+// }
+
+// export interface Order {
+//   tableId: string;
+//   _id: string;
+//   items: Item[];
+
+//   table: {
+//     isReserved: string;
+//     status: string;
+//     tableId: string;
+//     _id: string;
+//   };
+//   totalAmount: number;
+//   createdAt: string;
+// }
+
+// export interface Product {
+//   createdAt: Date | string | number;
+//   _id: string;
+//   name: string;
+//   price: number;
+//   quantity: number;
+//   image: string | null;
+// }
+
 export interface Item {
+  _id: unknown;
   totalAmount: number;
   product: string;
   name: string;
@@ -11,7 +46,6 @@ export interface Order {
   tableId: string;
   _id: string;
   items: Item[];
-
   table: {
     isReserved: string;
     status: string;
@@ -19,11 +53,11 @@ export interface Order {
     _id: string;
   };
   totalAmount: number;
-  createdAt: date;
+  createdAt: Date;
 }
 
 export interface Product {
-  createdAt: string | number | Date;
+  createdAt: Date | string | number;
   _id: string;
   name: string;
   price: number;
@@ -106,4 +140,12 @@ export interface DailyReport {
   startingCash: number;
   endingCash: number;
   totalSales: number;
+}
+
+// Define the shape of your API context
+export interface ApiContextType {
+  orders: Order[];
+  loading: boolean;
+  fetchOrders: () => void;
+  closeOrder: (tableNumber: string) => Promise<void>;
 }

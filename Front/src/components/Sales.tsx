@@ -1,10 +1,7 @@
-import { useEffect } from "react";
-import axios from "axios";
+import { useContext } from "react";
 import { useAtom } from "jotai";
-import { format, parseISO, isValid } from "date-fns";
+import { format } from "date-fns";
 import {
-  ordersAtom,
-  isLoadingAtom,
   isModalOpenAtom,
   orderSummaryAtom,
   startDateAtom,
@@ -12,190 +9,17 @@ import {
   selectedOrderAtom,
   orderStatusAtom,
 } from "../States/store";
-import { Order, Item, Product } from "../types/AllTypes";
-
-const closeOrder = async (tableNumber: string): Promise<string> => {
-  const response = await fetch(
-    `http://localhost:5200/orders/close/${tableNumber}`,
-    {
-      method: "POST",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Failed to close the order");
-  }
-  const result = await response.json();
-  return result._id;
-};
+import { Order } from "../types/AllTypes";
+import { ApiContext } from "../contexts/ApiContext";
 
 const Sales = () => {
-  const [orders, setOrders] = useAtom(ordersAtom);
-  const [loading, setLoading] = useAtom(isLoadingAtom);
+  const { orders, loading, closeOrder } = useContext(ApiContext);
   const [report, setReport] = useAtom(orderSummaryAtom);
   const [isModalOpen, setIsModalOpen] = useAtom(isModalOpenAtom);
   const [startDate, setStartDate] = useAtom(startDateAtom);
   const [endDate, setEndDate] = useAtom(endDateAtom);
   const [selectedOrder, setSelectedOrder] = useAtom(selectedOrderAtom);
   const [, setOrderStatus] = useAtom(orderStatusAtom);
-
-  // useEffect(() => {
-  //   fetchOrders();
-  // }, []);
-
-  // const fetchOrders = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const response = await axios.get<Order[]>("http://localhost:5200/orders");
-  //     const ordersWithProducts: Order[] = await Promise.all(
-  //       response.data.map(async (order) => {
-  //         // Handle cases where createdAt is missing or invalid
-  //         if (!order.createdAt) {
-  //           console.error(`Missing createdAt value for order ID: ${order._id}`);
-  //           throw new Error(
-  //             `Missing createdAt value for order ID: ${order._id}`
-  //           );
-  //         }
-
-  //         // Parse and validate createdAt date
-  //         const parsedCreatedAt = parseISO(order.createdAt);
-  //         if (!isValid(parsedCreatedAt)) {
-  //           console.error(`Invalid createdAt value for order ID: ${order._id}`);
-  //           throw new Error(
-  //             `Invalid createdAt value for order ID: ${order._id}`
-  //           );
-  //         }
-
-  //         // Fetch items with products for each order
-  //         const itemsWithProducts: Item[] = await Promise.all(
-  //           order.items.map(async (item) => {
-  //             try {
-  //               const productResponse = await axios.get<Product>(
-  //                 `http://localhost:5200/products/${item.product}`
-  //               );
-  //               const product = productResponse.data;
-  //               return { ...item, name: product.name, price: product.price };
-  //             } catch (error) {
-  //               console.error(
-  //                 `Error fetching product for item ID: ${item._id}`,
-  //                 error
-  //               );
-  //               // Handle or log the error as needed
-  //               return { ...item, name: "Product Not Found", price: 0 }; // Example fallback
-  //             }
-  //           })
-  //         );
-
-  //         return {
-  //           ...order,
-  //           items: itemsWithProducts,
-  //           createdAt: parsedCreatedAt,
-  //         };
-  //       })
-  //     );
-
-  //     // Log orders with products before setting state
-  //     // console.log("Orders with products:", ordersWithProducts);
-
-  //     // Update state with orders including parsed createdAt values
-  //     setOrders(ordersWithProducts);
-
-  //     // Initialize the order status atom with the current orders
-  //     const initialOrderStatus = ordersWithProducts.reduce((acc, order) => {
-  //       if (order.table && order.table.status) {
-  //         acc[order._id] = order.table.status;
-  //       } else {
-  //         // console.error(
-  //         //   `Undefined or missing table status for order ID: ${order._id}`
-  //         // );
-  //         acc[order._id] = "Unknown";
-  //       }
-  //       return acc;
-  //     }, {} as { [key: string]: string });
-  //     setOrderStatus(initialOrderStatus);
-  //   } catch (error) {
-  //     console.error("Error fetching orders:", error);
-  //     // Handle loading state if needed
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  useEffect(() => {
-    // Immediately fetch orders when component mounts
-    fetchOrders();
-  }, []); // Empty dependency array ensures this runs once on mount
-
-  const fetchOrders = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get<Order[]>("http://localhost:5200/orders");
-      const ordersWithProducts: Order[] = await Promise.all(
-        response.data.map(async (order) => {
-          // Handle cases where createdAt is missing or invalid
-          if (!order.createdAt) {
-            console.error(`Missing createdAt value for order ID: ${order._id}`);
-            throw new Error(
-              `Missing createdAt value for order ID: ${order._id}`
-            );
-          }
-
-          // Parse and validate createdAt date
-          const parsedCreatedAt = parseISO(order.createdAt);
-          if (!isValid(parsedCreatedAt)) {
-            console.error(`Invalid createdAt value for order ID: ${order._id}`);
-            throw new Error(
-              `Invalid createdAt value for order ID: ${order._id}`
-            );
-          }
-
-          // Fetch items with products for each order
-          const itemsWithProducts: Item[] = await Promise.all(
-            order.items.map(async (item) => {
-              try {
-                const productResponse = await axios.get<Product>(
-                  `http://localhost:5200/products/${item.product}`
-                );
-                const product = productResponse.data;
-                return { ...item, name: product.name, price: product.price };
-              } catch (error) {
-                console.error(
-                  `Error fetching product for item ID: ${item._id}`,
-                  error
-                );
-                // Handle or log the error as needed
-                return { ...item, name: "Product Not Found", price: 0 }; // Example fallback
-              }
-            })
-          );
-
-          return {
-            ...order,
-            items: itemsWithProducts,
-            createdAt: parsedCreatedAt,
-          };
-        })
-      );
-
-      // Update state with orders including parsed createdAt values
-      setOrders(ordersWithProducts);
-
-      // Initialize the order status atom with the current orders
-      const initialOrderStatus = ordersWithProducts.reduce((acc, order) => {
-        if (order.table && order.table.status) {
-          acc[order._id] = order.table.status;
-        } else {
-          acc[order._id] = "Unknown";
-        }
-        return acc;
-      }, {} as { [key: string]: string });
-      setOrderStatus(initialOrderStatus);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-      // Handle loading state if needed
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const generateReport = () => {
     if (!startDate || !endDate) {
@@ -212,13 +36,16 @@ const Sales = () => {
 
     end.setHours(23, 59, 59, 999);
 
-    const filteredOrders = orders.filter((order) => {
-      const orderDate = new Date(order.createdAt);
-      return orderDate >= start && orderDate <= end;
-    });
+    const filteredOrders = orders.filter(
+      (order: { createdAt: string | number | Date }) => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate >= start && orderDate <= end;
+      }
+    );
 
     const totalSales = filteredOrders.reduce(
-      (total, order) => total + order.totalAmount,
+      (total: unknown, order: { totalAmount: unknown }) =>
+        total + order.totalAmount,
       0
     );
     const totalOrders = filteredOrders.length;
@@ -307,7 +134,7 @@ const Sales = () => {
                 <div className="text-lg font-bold">Date</div>
                 <div className="text-lg font-bold">Status</div>
               </div>
-              {orders.map((order, index) => (
+              {orders.map((order: Order, index: number) => (
                 <div
                   key={order._id}
                   className={`mb-6 ${
@@ -334,15 +161,6 @@ const Sales = () => {
                           ? format(order.createdAt, "yyyy-MM-dd HH:mm:ss")
                           : "Invalid Date"}
                       </div>
-                      {/* <div
-                        className={`text-lg ${
-                          order.table.status === "open"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        } text-left`}
-                      >
-                        {order.table.status}
-                      </div> */}
                       {order.table ? (
                         <div
                           className={`text-lg ${

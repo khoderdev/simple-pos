@@ -4,6 +4,7 @@ import { CartItem, Order, Product, Table } from "../types/AllTypes";
 
 // export const ordersAtom = atomWithStorage<Order[]>("Order",[]);
 export const ordersAtom = atom<Order[]>([]);
+export const salesAtom = atomWithStorage<Order[]>("Sales",[]);
 export const orderStatusAtom = atom<{ [key: string]: string }>({});
 export const persistedIsLoggedInAtom = atomWithStorage("isLoggedIn", false);
 export const isLoggedInAtom = atom(false);
@@ -44,6 +45,7 @@ export const tableReservedAtom = atomWithStorage<Table[]>("tableReserved", []);
 
 const store = createStore(
   ordersAtom,
+  salesAtom,
   orderStatusAtom,
   startDateAtom,
   endDateAtom,
