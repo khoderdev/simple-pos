@@ -35,14 +35,14 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
   items: [orderItemSchema],
   totalAmount: {
-    type: Number,
+    type: Array,
     required: true,
   },
   table: {
     type: {
       tableId: {
         type: String,
-        required: true,
+        required: false,
       },
       isReserved: {
         type: String,
@@ -55,7 +55,7 @@ const orderSchema = new mongoose.Schema({
         default: "open",
       },
     },
-    required: true,
+    required: false,
   },
   createdAt: {
     type: Date,
