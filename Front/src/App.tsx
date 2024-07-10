@@ -112,7 +112,7 @@ function App() {
   return (
     <ApiProvider>
       <CashProvider>
-        <Router>
+        {/* <Router> */}
           <MainLayout>
             <Routes>
               <Route path="/" element={<HomePage />} />
@@ -143,7 +143,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </MainLayout>
-        </Router>
+        {/* </Router> */}
       </CashProvider>
     </ApiProvider>
   );

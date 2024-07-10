@@ -37,9 +37,9 @@ function MainLayout({ children }) {
           // "transform -translate-y-full"
         } z-10`}
       >
-        <nav className="container mx-auto px-4 py-0 flex justify-between items-center">
+        <nav className="container mx-auto px-4 py-2 flex justify-between items-center">
           <Link to="/">
-            <img src="rooster2.png" className="w-48 sm:w-32 p-1" alt="Logo" />
+            <img src="logo.png" className="w-48 sm:w-32 p-1" alt="Logo" />
           </Link>
           <div className="flex items-center">
             <div className="hidden sm:flex gap-3 items-center">
